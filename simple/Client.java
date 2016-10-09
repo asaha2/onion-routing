@@ -22,7 +22,7 @@ public class Client{
 			System.err.println("Error: Unreachable host.");
 		}
 		
-		/* transmit data via opened sockets */ 
+		/* continually transmit data via opened sockets */ 
 		if(clientSocket != null && os != null && is != null){
 			while(true){
 				try{
@@ -44,8 +44,8 @@ public class Client{
 			}
 		}
 
-		try{
 		/* close io streams and opened sockets */
+		try{
 			os.close();
 			is.close();
 			clientSocket.close();
