@@ -5,15 +5,14 @@ public class Server{
 		
 		/* declaration of server-client socket and io streams */
 		ServerSocket echoServer = null;
-		String line;
-		// DataInputStream is;
+		Socket serverSocket = null;
 		BufferedReader is = null;
 		PrintWriter os;
-		Socket clientSocket = null;
+		String line;
 		
-		/* open socket on port 1234, needs to be more than 1023 if not privileged users */ 
+		/* open socket on port 1500, needs to be more than 1023 if not privileged users */ 
 		try{
-			echoServer = new ServerSocket(1234);
+			echoServer = new ServerSocket(1500);
 		} catch(IOException e){
 			System.out.println("Error: Failed to initialize socket");
 		}
@@ -21,13 +20,13 @@ public class Server{
 		/* listen and accept socket connections, initialize io streams, 
 		   echo data back to client as long as receiving data */ 
 		try{
-			clientSocket = echoServer.accept();
-			// is = new DataInputStream(clientSocket.getInputStream());
-			is = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-			os = new PrintWriter(clientSocket.getOutputStream(), true);
+			serverSocket = echoServer.accept();
+			// is = new DataInputStream(serverSocket.getInputStream());
+			is = new BufferedReader(new InputStreamReader(serverSocket.getInputStream()));
+			os = new PrintWriter(serverSocket.getOutputStream(), true);
 			while(true){
 				line = is.readLine();
-				System.out.println("Received: " + line);
+				System.out.println("Received from client: " + line);
 				os.println(line);
 			}
 		} catch(IOException e){
