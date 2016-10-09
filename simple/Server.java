@@ -9,10 +9,12 @@ public class Server{
 		BufferedReader is = null;
 		PrintWriter os;
 		String line;
+		int port;
 		
 		/* open socket on port 1500, needs to be more than 1023 if not privileged users */ 
 		try{
-			echoServer = new ServerSocket(1500);
+			port = Integer.parseInt(args[0]);
+			echoServer = new ServerSocket(port);
 		} catch(IOException e){
 			System.out.println("Error: Failed to initialize socket");
 		}

@@ -8,11 +8,14 @@ public class Client{
 		DataOutputStream os = null;
 		BufferedReader is = null;
 		BufferedReader isUser = null;
-		String responseLine, userLine;
+		String responseLine, userLine, localhost;
+		int port;
 		
 		/* open socket in localhost on port 1500, initialize io streams */ 
 		try{
-			clientSocket = new Socket("localhost", 1500);
+			localhost = args[0];
+			port = Integer.parseInt(args[1]);
+			clientSocket = new Socket(localhost, port);
 			os = new DataOutputStream(clientSocket.getOutputStream());
 			is = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 			isUser = new BufferedReader(new InputStreamReader(System.in));
