@@ -26,8 +26,11 @@ public class Server{
 			os = new PrintWriter(serverSocket.getOutputStream(), true);
 			while(true){
 				line = is.readLine();
-				System.out.println("Received from client: " + line);
-				os.println(line);
+				while(line != null){
+					System.out.println("Received from client: " + line);
+					os.println(line);
+					line = null;
+				}
 			}
 		} catch(IOException e){
 			System.out.println("Error: Failed to accept socket connections");

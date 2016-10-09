@@ -7,13 +7,15 @@ public class Client{
 		Socket clientSocket = null;
 		DataOutputStream os = null;
 		BufferedReader is = null;
-		String responseLine;
+		BufferedReader isUser = null;
+		String responseLine, userLine;
 		
 		/* open socket in localhost on port 1500, initialize io streams */ 
 		try{
 			clientSocket = new Socket("localhost", 1500);
 			os = new DataOutputStream(clientSocket.getOutputStream());
 			is = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+			isUser = new BufferedReader(new InputStreamReader(System.in));
 		} catch(UnknownHostException e){
 			System.err.println("Error: Unknown hostname.");
 		} catch(IOException e){
@@ -22,21 +24,35 @@ public class Client{
 		
 		/* transmit data via opened sockets */ 
 		if(clientSocket != null && os != null && is != null){
-			try{
-				os.writeBytes("Message\n");
-				while((responseLine = is.readLine()) != null){
-					System.out.println("Response from server: " + responseLine);
+			while(true){
+				try{
+					userLine = isUser.readLine();
+					// System.out.println("User input: " + userLine);
+					if(userLine != null){
+						os.writeBytes(userLine + "\n");
+						userLine = null;
+						if((responseLine = is.readLine()) != null){
+							System.out.println("Response from server: " + responseLine);
+							responseLine = null;
+						}				
+					}
+				} catch (UnknownHostException e){
+					System.err.println("Trying to connect to unknown host: " + e);
+				} catch (IOException e){
+					System.err.println("IOException:  " + e);
 				}
-				
-				/* close io streams and opened sockets */
-				os.close();
-				is.close();
-				clientSocket.close();
-			} catch (UnknownHostException e){
-				System.err.println("Trying to connect to unknown host: " + e);
-			} catch (IOException e){
-				System.err.println("IOException:  " + e);
 			}
+		}
+
+		try{
+		/* close io streams and opened sockets */
+			os.close();
+			is.close();
+			clientSocket.close();
+		} catch (UnknownHostException e){
+			System.err.println("Trying to connect to unknown host: " + e);
+		} catch (IOException e){
+			System.err.println("IOException:  " + e);
 		}
 	}
 }
