@@ -1,6 +1,8 @@
 import java.io.*;
 import java.net.*;
 
+/* usage: java Client <hostname> <port-number> */
+
 public class Client{
 	public static void main(String args[]){
 		
@@ -9,14 +11,14 @@ public class Client{
 		DataOutputStream os = null;
 		BufferedReader is = null;
 		BufferedReader isUser = null;
-		String responseLine, userLine, localhost;
+		String responseLine, userLine, hostname;
 		int port;
 		
-		/* open socket in localhost on port 1500, initialize io streams */ 
+		/* open socket in hostname on port xxxx, initialize io streams */ 
 		try{
-			localhost = args[0];
+			hostname = args[0];
 			port = Integer.parseInt(args[1]);
-			clientSocket = new Socket(localhost, port);
+			clientSocket = new Socket(hostname, port);
 			os = new DataOutputStream(clientSocket.getOutputStream());
 			is = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 			isUser = new BufferedReader(new InputStreamReader(System.in));
@@ -35,10 +37,11 @@ public class Client{
 					if(userLine != null){
 						os.writeBytes(userLine + "\n");
 						userLine = null;
-						if((responseLine = is.readLine()) != null){
-							System.out.println("Response from server: " + responseLine);
-							responseLine = null;
-						}				
+						responseLine = null;
+						// if((responseLine = is.readLine()) != null){
+						// 	System.out.println("Response from server: " + responseLine);
+						// 	responseLine = null;
+						// }				
 					}
 				} catch (UnknownHostException e){
 					System.err.println("Trying to connect to unknown host: " + e);
