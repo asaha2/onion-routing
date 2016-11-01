@@ -4,20 +4,25 @@ import java.net.*;
 /* usage: java Client <hostname> <port-number> */
 
 public class Client{
-	public static void main(String args[]){
-		
+	String hostname;
+	int port;
+	
+	public Client(String hostname, int port) {
+		this.hostname = hostname;
+		this.port = port;
+	}
+	
+	public void startConnection() {
+
 		/* declaration of client socket and io streams */ 
 		Socket clientSocket = null;
 		DataOutputStream os = null;
 		BufferedReader is = null;
 		BufferedReader isUser = null;
-		String responseLine, userLine, hostname;
-		int port;
+		String responseLine, userLine;
 		
 		/* open socket in hostname on port xxxx, initialize io streams */ 
 		try{
-			hostname = args[0];
-			port = Integer.parseInt(args[1]);
 			clientSocket = new Socket(hostname, port);
 			os = new DataOutputStream(clientSocket.getOutputStream());
 			is = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
@@ -62,4 +67,5 @@ public class Client{
 			System.err.println("IOException:  " + e);
 		}
 	}
+	
 }

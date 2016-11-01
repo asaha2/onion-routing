@@ -1,22 +1,29 @@
 import java.io.*;
 import java.net.*;
 
+import javax.xml.stream.events.StartDocument;
+
 /* usage: java Proxy <hostname> <port-number> */
 
 public class Server{
-	public static void main(String args[]){
-		
+	int port;
+	
+	public Server(int port) {
+		this.port = port;
+	}
+	
+	public void startConnection() {
+
 		/* declaration of server-client socket and io streams */
 		ServerSocket echoServer = null;
 		Socket serverSocket = null;
 		BufferedReader is = null;
 		PrintWriter os;
 		String line;
-		int port;
 		
 		/* open socket on port xxxx, needs to be more than 1023 if not privileged users */ 
 		try{
-			port = Integer.parseInt(args[0]);
+//			port = Integer.parseInt(args[0]);
 			echoServer = new ServerSocket(port);
 		} catch(IOException e){
 			System.out.println("Error: Failed to initialize socket");
