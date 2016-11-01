@@ -13,6 +13,22 @@ public class Client{
 		this.port = port;
 	}
 	
+	public void initProxyConn() {
+		
+	}
+	
+	public void initExtendedProxyConn() {
+	
+	}
+	
+	public void initDataTransfer() {
+		
+	}
+	
+	public void generateMessage() {
+		
+	}
+	
 	public void startConnection() {
 
 		/* declaration of client socket and io streams */ 
@@ -69,6 +85,18 @@ public class Client{
 		}
 		
 		successfulConnection = true;
+		
+	}
+	
+	public static void main(String[] args) {
+		// Make header +  message
+		// get proxies
+		// choose 2 proxies at random
+		// sent create to 1st proxy
+		// wait for the response
+		// send extended create to 2nd proxy
+		// wait for the extended response
+		// Send the messane to proxy 1
 		
 	}
 	

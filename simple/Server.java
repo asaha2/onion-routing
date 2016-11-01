@@ -1,7 +1,6 @@
 import java.io.*;
 import java.net.*;
 
-import javax.xml.stream.events.StartDocument;
 
 /* usage: java Proxy <hostname> <port-number> */
 
