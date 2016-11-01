@@ -6,18 +6,51 @@ import java.util.HashSet;
 
 public class DirectoryServer {
 	HashMap<String, String> proxies;
+	HashMap<String, String> destinationServers;
+	String directoryServer;
+	
 	int port = 80; 		//whatever
 	
-	public void addProxyServer(String serverName, String hostname) {
-		proxies.put(serverName, hostname);
+	public void addServer(String serverName, String hostname, String serverType) {
+		if (serverType.equals("proxy")) {
+			proxies.put(serverName, hostname);
+		}
+		
+		else if (serverType.equals("destination")) {
+			destinationServers.put(serverName, hostname);
+		}
 	}
+	
+	/*
+	 * 	Initialize: proxies, destinationServers, directoryServer
+	 */
 	
 	public DirectoryServer() {
 		proxies = new HashMap<String, String>();
-		addProxyServer("Proxy1", "35.162.165.63");
-		addProxyServer("Proxy2", "35.161.60.16");
-		addProxyServer("Proxy3", "35.162.181.227");
-		addProxyServer("Proxy4", "35.162.176.50");
+		addServer("Proxy1", "35.162.165.63", "proxy");
+		addServer("Proxy2", "35.161.60.16", "proxy");
+		addServer("Proxy3", "35.162.181.227", "proxy");
+		addServer("Proxy4", "35.162.176.50", "proxy");
+		
+		destinationServers = new HashMap<String, String>();
+		addServer("DestinationServer1", "35.160.73.178", "destination");
+		//add more destination servers here
+		
+		directoryServer = "35.160.134.241";
+		
+	}
+	
+	//method will return list of unique available IP addresses of destination server
+	public HashSet<String> requestDestinationServers() {
+		
+		HashSet<String> availableDestinationServers = new HashSet<String>();
+		
+		if (isAvailable(destinationServers.get("DestinationServer1"), port)) {
+			availableDestinationServers.add(destinationServers.get("DestinationServer1"));
+		}
+		
+		return availableDestinationServers;
+		
 	}
 	
 	
@@ -56,6 +89,10 @@ public class DirectoryServer {
 		}
 		
 		return false;
+	}
+	
+	public String getDirectoryServer() {
+		return directoryServer;
 	}
 	
 	
