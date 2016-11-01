@@ -1,0 +1,7 @@
+Server				Public DNS											IP Address		Availability Zone
+Destination1		ec2-35-160-73-178.us-west-2.compute.amazonaws.com	35.160.73.178	us-west-2b
+DirectoryServer		ec2-35-160-134-241.us-west-2.compute.amazonaws.com	35.160.134.241	us-west-2a
+Proxy1				ec2-35-162-165-63.us-west-2.compute.amazonaws.com	35.162.165.63	us-west-2b
+Proxy2				ec2-35-161-60-16.us-west-2.compute.amazonaws.com	35.161.60.16	us-west-2a
+Proxy3				ec2-35-162-181-227.us-west-2.compute.amazonaws.com	35.162.181.227	us-west-2a
+Proxy4				ec2-35-162-176-50.us-west-2.compute.amazonaws.com	35.162.176.50	us-west-2c
