@@ -6,6 +6,7 @@ import java.net.*;
 public class Client{
 	String hostname;
 	int port;
+	boolean successfulConnection = false;
 	
 	public Client(String hostname, int port) {
 		this.hostname = hostname;
@@ -66,6 +67,9 @@ public class Client{
 		} catch (IOException e){
 			System.err.println("IOException:  " + e);
 		}
+		
+		successfulConnection = true;
+		
 	}
 	
 }
