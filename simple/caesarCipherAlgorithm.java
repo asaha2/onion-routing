@@ -200,10 +200,15 @@ public class caesarCipherAlgorithm {
 	
 	public static void main (String[] args) {
 		caesarCipherAlgorithm caesarCipherAlgorithm = new caesarCipherAlgorithm();
-		String input = "oiuyrfn89eyrq34807r340r83r23-230r943-r4/.//``~  .erger ,.ergeruh3oi34....ddz";
+		String input = "oiuyrfn89eyrq34807r34acamchbpl0r83r23-230r943-r4/.//``~  .erger ,.ergeruh3oi34....ddz";
+		
+		System.out.println("Input is " + input);
 		
 		String encryption = caesarCipherAlgorithm.dataEncryption(input);
+		
+		System.out.println("encryption is " + encryption);
 		String decryption = caesarCipherAlgorithm.dataDecryption(encryption);
+		System.out.println("decryption is " + decryption);
 		
 		if (caesarCipherAlgorithm.verifyEncryptionDecryption(input, decryption)) {
 			System.out.println("Encryption/Decryption works");
