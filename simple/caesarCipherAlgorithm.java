@@ -8,7 +8,7 @@ public class caesarCipherAlgorithm {
 		String result = "";
 			
 		Random random = new Random();
-		int caesarShiftNumber = Math.abs(random.nextInt(10 - 1) + 1);	//change it to just random
+		int caesarShiftNumber = Math.abs(random.nextInt(10 - 1) + 1);
 		
 		result += caesarShiftNumber;
 		
