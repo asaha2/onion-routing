@@ -1,5 +1,7 @@
+package simple;
 import java.io.*;
 import java.net.*;
+import simple.Message;
 
 /* usage: java Client <hostname> <port-number> */
 
@@ -34,16 +36,16 @@ public class Client{
 		/* declaration of client socket and io streams */ 
 		Socket clientSocket = null;
 		DataOutputStream os = null;
-		BufferedReader is = null;
+		DataInputStream is = null;
 		BufferedReader isUser = null;
-		String responseLine, userLine;
+		//String responseLine, userLine;
+		byte[] responseLine = new byte[512];
 		
 		/* open socket in hostname on port xxxx, initialize io streams */ 
 		try{
 			clientSocket = new Socket(hostname, port);
 			os = new DataOutputStream(clientSocket.getOutputStream());
-			is = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-			isUser = new BufferedReader(new InputStreamReader(System.in));
+			is = new DataInputStream(clientSocket.getInputStream());
 		} catch(UnknownHostException e){
 			System.err.println("Error: Unknown hostname.");
 		} catch(IOException e){
@@ -54,21 +56,27 @@ public class Client{
 		if(clientSocket != null && os != null && is != null){
 			while(true){
 				try{
-					userLine = isUser.readLine();
 					// System.out.println("User input: " + userLine);
-					if(userLine != null){
-						os.writeBytes(userLine + "\n");
-						userLine = null;
-						responseLine = null;
-						// if((responseLine = is.readLine()) != null){
-						// 	System.out.println("Response from server: " + responseLine);
-						// 	responseLine = null;
-						// }				
-					}
+					Message create = new Message();
+					create.type=Message.CellType.control;
+					create.cmd=Message.Cmd.create;
+
+					//for (byte mess : create.createMeassage()){
+					os.write(create.createMessage()[0],0,512);
+					is.readFully(responseLine,0,512);
+					if(responseLine  != null){
+						Message created = Message.receiveMessage(responseLine);
+						if (created.cmd==Message.Cmd.created) break;
+
+						System.out.println("Response from server: " + created.data);							
+					}			
+					//}	
+					
 				} catch (UnknownHostException e){
 					System.err.println("Trying to connect to unknown host: " + e);
 				} catch (IOException e){
 					System.err.println("IOException:  " + e);
+					break;
 				}
 			}
 		}
@@ -89,6 +97,8 @@ public class Client{
 	}
 	
 	public static void main(String[] args) {
+		Client c = new Client("localhost",8080);
+		c.startConnection();
 		// Make header +  message
 		// get proxies
 		// choose 2 proxies at random
