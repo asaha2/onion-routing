@@ -6,11 +6,11 @@ import java.net.*;
 
 public class Server{
 	int port;
-	
+
 	public Server(int port) {
 		this.port = port;
 	}
-	
+
 	public void startConnection() {
 
 		/* declaration of server-client socket and io streams */
@@ -19,15 +19,15 @@ public class Server{
 		BufferedReader is = null;
 		PrintWriter os;
 		String line;
-		
+
 		/* open socket on port xxxx, needs to be more than 1023 if not privileged users */ 
 		try{
-//			port = Integer.parseInt(args[0]);
+			//			port = Integer.parseInt(args[0]);
 			echoServer = new ServerSocket(port);
 		} catch(IOException e){
 			System.out.println("Error: Failed to initialize socket");
 		}
-		
+
 		/* listen and accept socket connections, initialize io streams, 
 		   echo data back to client as long as receiving data */ 
 		try{

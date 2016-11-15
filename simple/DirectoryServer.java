@@ -1,8 +1,7 @@
-import java.io.*;
-import java.net.*;
 import java.util.HashMap;
 import java.util.HashSet;
-
+import simple.Client;
+import simple.Proxy;
 
 public class DirectoryServer {
 	HashMap<String, String> proxies;
@@ -27,10 +26,10 @@ public class DirectoryServer {
 	
 	public DirectoryServer() {
 		proxies = new HashMap<String, String>();
-		addServer("Proxy1", "35.162.165.63", "proxy");
-		addServer("Proxy2", "35.161.60.16", "proxy");
-		addServer("Proxy3", "35.162.181.227", "proxy");
-		addServer("Proxy4", "35.162.176.50", "proxy");
+		addServer("Proxy0", "35.162.165.63", "proxy");
+		addServer("Proxy1", "35.161.60.16", "proxy");
+		addServer("Proxy2", "35.162.181.227", "proxy");
+		addServer("Proxy3", "35.162.176.50", "proxy");
 		
 		destinationServers = new HashMap<String, String>();
 		addServer("DestinationServer1", "35.160.73.178", "destination");
@@ -50,7 +49,6 @@ public class DirectoryServer {
 		}
 		
 		return availableDestinationServers;
-		
 	}
 	
 	
@@ -81,10 +79,10 @@ public class DirectoryServer {
 	
 	//method will check if a proxy is busy or not by establishing a connection
 	public boolean isAvailable(String IPAddress, int port) { 
-		Client client = new Client(IPAddress, port);
+		Client client = new Client();
 		client.startConnection();
 
-		if (client.successfulConnection) {
+		if (client.isConnSuccessful()) {
 			return true;
 		}
 		
@@ -95,8 +93,19 @@ public class DirectoryServer {
 		return directoryServer;
 	}
 	
-	
 	public static void main(String args[]) {
 		DirectoryServer dirServer = new DirectoryServer();
+		Proxy[] prx = new Proxy[2];
+		
+		prx[0] = new Proxy("127.0.0.1", 8080);
+		prx[1] = new Proxy("127.0.0.1", 8082);
+		Client c = new Client(prx);
+		
+		prx[0].start();
+		prx[1].start();
+		c.start();
+		
+		System.out.println("Started");
+
 	}
 }

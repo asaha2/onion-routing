@@ -5,12 +5,32 @@ import simple.Message;
 
 /* usage: java Proxy <hostname> <source-port> <destination-port> */
 
-public class Proxy{
+public class Proxy extends Thread {
 	int recvPort, sendPort;
 	String hostname;
 	String message;
 	boolean isExit=true;
-	
+	Thread t;
+
+	public Proxy(String hostname, int port) {
+		this.setHostname(hostname);
+		this.setRecvPort(port);
+		this.setSendPort(port + 1);
+	}
+	public void run() {
+		System.out.println("Receiving");
+		this.recieveMessage();
+		System.out.println(t.getName());
+	}
+
+//	public void start() {
+//		System.out.println("Starting proxy: " + hostname);
+//		if(t == null) {
+//			t = new Thread("Thread-" + hostname);
+//			t.start();
+//		}
+//	}
+
 	public int getRecvPort() {
 		return this.recvPort;
 	}
@@ -24,20 +44,20 @@ public class Proxy{
 		this.hostname = hostname;
 	}
 	ServerSocket echoProxy = null;
-	
+
 	Socket backwardProxy = null, forwardProxy = null;
-	
+
 	DataInputStream inputBackward = null,inputForward;
 	DataOutputStream outputBackward = null,outputForward;
-	
-	
+
+
 	private void relayMessage(Message m, byte[] responseLine) throws IOException{
 		outputForward.write(m.createMessage()[0]);//ask next 
 		inputForward.readFully(responseLine);
 		m=Message.receiveMessage(responseLine);
 		outputBackward.write(m.createMessage()[0]);
 	}
-	
+
 	private void extendProxyConn(Message m) throws IOException {
 		// System.out.println("User input: " + userLine);
 		isExit=false;
@@ -46,8 +66,8 @@ public class Proxy{
 			relayMessage(m,responseLine);
 		}
 		System.out.println("got extend from "+backwardProxy.getInetAddress().toString() +" "+backwardProxy.getPort());
-		
-		
+
+
 		Message create = new Message();
 		create.type=Message.CellType.control;
 		create.cmd=Message.Cmd.create;
@@ -61,14 +81,14 @@ public class Proxy{
 		if(responseLine  != null){
 			Message created = Message.receiveMessage(responseLine);
 			if (created.cmd!=Message.Cmd.created) throw new IOException("Incorrect message");
-		
+
 			System.out.println("Got created from 2nd hop ");	
 		}
-		
+
 		Message extended = new Message();
 		extended.type=Message.CellType.proxy;
 		extended.cmd=Message.Cmd.extended;
-		
+
 		//for (byte mess : create.createMeassage()){
 		outputBackward.write(extended.createMessage()[0]);
 		//outputBackward.close();
@@ -93,7 +113,7 @@ public class Proxy{
 			//outputBackward.close();
 			//inputBackward.close();
 		}
-					
+
 		inputBackward.readFully(line,0,512);
 		m = Message.receiveMessage(line);
 		if (m.cmd==Message.Cmd.extend){
@@ -107,7 +127,7 @@ public class Proxy{
 		if (m.cmd==Message.Cmd.begin){
 			sendData(m);		
 		}else{throw new IOException("wrong type of message");}
-		
+
 	}
 	public void sendData(Message m) throws NumberFormatException, UnknownHostException, IOException{
 		if (null!=forwardProxy){
@@ -115,9 +135,9 @@ public class Proxy{
 			return;
 		}
 		String[] host= (new String(m.data)).split(":");
-		
+
 		forwardProxy = new Socket(host[0], new Integer(host[1]));//TCP connection
-		
+
 		inputForward= new DataInputStream(forwardProxy.getInputStream());
 		outputForward= new DataOutputStream(forwardProxy.getOutputStream());
 		PrintWriter pw = new PrintWriter(forwardProxy.getOutputStream());
@@ -137,40 +157,40 @@ public class Proxy{
 		//for (byte mess : create.createMeassage()){
 		outputBackward.write(connected.createMessage()[0]);
 	}
-	
-	
+
+
 	public void recieveMessage() {
-		
+
 		/* open socket on port xxxx, needs to be more than 1023 if not privileged users */ 
 		try{
 			echoProxy = new ServerSocket(recvPort,1);//maximum 1 connection
-			
+
 		} catch(IOException e){
 			System.out.println("Error: Failed to initialize socket"+e);
 		}
-		
+
 		/* listen and accept socket connections, initialize io streams, 
 		   echo data back to client as long as receiving data */ 
-	while(true){
-		try{
-			acceptProxyConn();
+		while(true){
+			try{
+				acceptProxyConn();
 
-			
-		} catch(IOException e){
-			System.out.println("Error: Failed to accept socket connections "+e);
-		}
+
+			} catch(IOException e){
+				System.out.println("Error: Failed to accept socket connections "+e);
+			}
 		}
 	}
-	
-	
+
+
 	public static void main(String[] args) {
-		Proxy p1 = new Proxy();
-		p1.setHostname("localhost");
-		p1.setRecvPort(new Integer(args[0]));
-		p1.recieveMessage();
-		
-		
+		//		Proxy p1 = new Proxy();
+		//		p1.setHostname("localhost");
+		//		p1.setRecvPort(new Integer(args[0]));
+		//		p1.recieveMessage();
+
+
 		//p.setSendPort(8081);
-		
+
 	}
 }
