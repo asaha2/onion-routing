@@ -204,7 +204,7 @@ public class caesarCipherAlgorithm {
 		
 		System.out.println("Input is " + input);
 		
-		String encryption = caesarCipherAlgorithm.dataEncryption(input);
+		String encryption = caesarCipherAlgorithm.dataEncryption(input); 
 		
 		System.out.println("encryption is " + encryption);
 		String decryption = caesarCipherAlgorithm.dataDecryption(encryption);
