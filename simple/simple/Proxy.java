@@ -184,13 +184,7 @@ public class Proxy extends Thread {
 
 
 	public static void main(String[] args) {
-		//		Proxy p1 = new Proxy();
-		//		p1.setHostname("localhost");
-		//		p1.setRecvPort(new Integer(args[0]));
-		//		p1.recieveMessage();
-
-
-		//p.setSendPort(8081);
-
+		Proxy p = new Proxy(args[0], Integer.parseInt(args[1]));
+		p.start();
 	}
 }

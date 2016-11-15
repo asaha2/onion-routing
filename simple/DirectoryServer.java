@@ -97,8 +97,8 @@ public class DirectoryServer {
 		DirectoryServer dirServer = new DirectoryServer();
 		Proxy[] prx = new Proxy[2];
 		
-		prx[0] = new Proxy("127.0.0.1", 8080);
-		prx[1] = new Proxy("127.0.0.1", 8082);
+		prx[0] = new Proxy("35.162.165.63", 8080);
+		prx[1] = new Proxy("35.161.60.16", 8082);
 		Client c = new Client(prx);
 		
 		prx[0].start();

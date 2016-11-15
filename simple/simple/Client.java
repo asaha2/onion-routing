@@ -159,12 +159,12 @@ public class Client extends Thread {
 
 	public static void main(String[] args) {
 		Client c = new Client();
-		c.hop2Hostname=c.hop1Hostname="127.0.0.1";
-		c.hop1port=8080;
-		c.hop2port=8082;
+		c.hop1Hostname= args[0];
+		c.hop1port=Integer.parseInt(args[1]);
+		c.hop2Hostname= args[2];
+		c.hop2port=Integer.parseInt(args[3]);
 		c.serverHostname="www.google.com";
 		c.serverPort=80;
-
 
 		c.startConnection();
 		// Make header +  message
