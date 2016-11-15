@@ -107,33 +107,29 @@ public class Proxy{
 		if (m.cmd==Message.Cmd.begin){
 			sendData(m);		
 		}else{throw new IOException("wrong type of message");}
-			
-			
-			
-			//}
-//				while(line != null){
-//					 System.out.println("Received from client: " + line);
-//					line = null;
-//				}
 		
 	}
 	public void sendData(Message m) throws NumberFormatException, UnknownHostException, IOException{
-		
+		if (null!=forwardProxy){
+			relayMessage(m,new byte[512]);
+			return;
+		}
 		String[] host= (new String(m.data)).split(":");
-		forwardProxy = new Socket(host[0], new Integer(host[1]));
+		
+		forwardProxy = new Socket(host[0], new Integer(host[1]));//TCP connection
+		
 		inputForward= new DataInputStream(forwardProxy.getInputStream());
 		outputForward= new DataOutputStream(forwardProxy.getOutputStream());
-		inputForward.readByte();
-		//for (byte mess : create.createMeassage()){
-		//outputForward.write(create.createMessage()[0],0,512);
-		//inputForward.readFully(responseLine,0,512);
-//		if(responseLine  != null){
-//			Message created = Message.receiveMessage(responseLine);
-//			if (created.cmd!=Message.Cmd.created) throw new IOException("Incorrect message");
-//		
-//			System.out.println("Got created from 2nd hop ");	
-//		}
-		
+		PrintWriter pw = new PrintWriter(forwardProxy.getOutputStream());
+		pw.print("GET / HTTP/1.1\r\n"); //HTTP connection
+		pw.print("Host: "+forwardProxy.getInetAddress().getHostName()+"\r\n\r\n");
+		pw.flush();
+
+		System.out.println("waiting!");		
+
+		byte b = inputForward.readByte();
+		System.out.println(b);		
+
 		Message connected = new Message();
 		connected.type=Message.CellType.proxy;
 		connected.cmd=Message.Cmd.connected;
@@ -144,10 +140,6 @@ public class Proxy{
 	
 	
 	public void recieveMessage() {
-
-		/* declaration of server-client socket and io streams */
-		
-
 		
 		/* open socket on port xxxx, needs to be more than 1023 if not privileged users */ 
 		try{

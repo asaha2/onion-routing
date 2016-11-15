@@ -53,8 +53,8 @@ public class Client{
 	public void initDataTransfer(byte[] responseLine) throws IOException {
 		Message request = new Message();
 		request.type=Message.CellType.proxy;
-		request.cmd=Message.Cmd.data;
-		request.data =(serverHostname+":"+serverHostname+"").getBytes();
+		request.cmd=Message.Cmd.begin;
+		request.data =(serverHostname+":"+serverPort+"").getBytes();
 		
 		//for (byte mess : create.createMeassage()){
 		os.write(request.createMessage()[0],0,512);
