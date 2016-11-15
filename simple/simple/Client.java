@@ -29,7 +29,7 @@ public class Client{
 			Message created = Message.receiveMessage(responseLine);
 			if (created.cmd!=Message.Cmd.created) throw new IOException("Incorrect message");
 
-			System.out.println("Response from server: " + created.data);							
+			System.out.println("Response from server: " + created.cmd);							
 		}
 	}
 	
@@ -46,7 +46,7 @@ public class Client{
 			Message extented = Message.receiveMessage(responseLine);
 			if (extented.cmd!=Message.Cmd.extended) throw new IOException("Incorrect message");
 
-			System.out.println("Response from server: " + extented.data);							
+			System.out.println("Response from server: " + extented.cmd);							
 		}
 	}
 	
@@ -63,7 +63,7 @@ public class Client{
 			Message response = Message.receiveMessage(responseLine);
 			//if (response.cmd!=Message.Cmd.extended) throw new IOException("Incorrect message");
 
-			System.out.println("Response from server: " + response.data);							
+			System.out.println("Response from server: " + response.cmd);							
 		}
 	}
 	
@@ -94,18 +94,17 @@ public class Client{
 		/* continually transmit data via opened sockets */ 
 		if(clientSocket != null && os != null && is != null){
 			//while(true){
-				try{
-					initProxyConn(responseLine);
-					
-					
-					//}	
-					
-				} catch (UnknownHostException e){
-					System.err.println("Trying to connect to unknown host: " + e);
-				} catch (IOException e){
-					System.err.println("IOException:  " + e);
-					//break;
-				}
+			try{
+				initProxyConn(responseLine);
+				initExtendedProxyConn(responseLine);
+				initDataTransfer(responseLine);
+				
+			} catch (UnknownHostException e){
+				System.err.println("Trying to connect to unknown host: " + e);
+			} catch (IOException e){
+				System.err.println("IOException:  " + e);
+				//break;
+			}
 			//}
 		}
 

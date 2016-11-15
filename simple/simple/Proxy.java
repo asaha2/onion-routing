@@ -45,7 +45,7 @@ public class Proxy{
 		if (null!=forwardProxy){
 			relayMessage(m,responseLine);
 		}
-		
+		System.out.println("got extend from "+backwardProxy.getInetAddress().toString() +" "+backwardProxy.getPort());
 		
 		
 		Message create = new Message();
@@ -68,7 +68,7 @@ public class Proxy{
 		Message extended = new Message();
 		extended.type=Message.CellType.proxy;
 		extended.cmd=Message.Cmd.extended;
-		System.out.println("got extend from "+backwardProxy.getInetAddress().toString() +" "+backwardProxy.getPort());
+		
 		//for (byte mess : create.createMeassage()){
 		outputBackward.write(extended.createMessage()[0]);
 		//outputBackward.close();
@@ -81,34 +81,32 @@ public class Proxy{
 		outputBackward= new DataOutputStream(backwardProxy.getOutputStream());
 
 		//while(true){
-			inputBackward.readFully(line,0,512);
-			Message m = Message.receiveMessage(line);
-			if (m.cmd==Message.Cmd.create){
-				Message created = new Message();
-				created.type=Message.CellType.control;
-				created.cmd=Message.Cmd.created;
-				System.out.println("got created from "+backwardProxy.getInetAddress().toString() +" "+backwardProxy.getPort());
-				//for (byte mess : create.createMeassage()){
-				outputBackward.write(created.createMessage()[0]);
-				//outputBackward.close();
-				//inputBackward.close();
-			}
-						
-			inputBackward.readFully(line,0,512);
-			m = Message.receiveMessage(line);
-			if (m.cmd==Message.Cmd.extend){
-				extendProxyConn(m);
-				while (true){
-					inputBackward.readFully(line,0,512);
-					m = Message.receiveMessage(line);
-					relayMessage(m,line);
-				}
-			}
-			if (m.cmd==Message.Cmd.begin){
-					sendData(m);
+		inputBackward.readFully(line,0,512);
+		Message m = Message.receiveMessage(line);
+		if (m.cmd==Message.Cmd.create){
+			Message created = new Message();
+			created.type=Message.CellType.control;
+			created.cmd=Message.Cmd.created;
+			System.out.println("got create packet from "+backwardProxy.getInetAddress().toString() +" "+backwardProxy.getPort());
+			//for (byte mess : create.createMeassage()){
+			outputBackward.write(created.createMessage()[0]);
+			//outputBackward.close();
+			//inputBackward.close();
+		}
 					
-					
-			}else{throw new IOException("wrong type of message");}
+		inputBackward.readFully(line,0,512);
+		m = Message.receiveMessage(line);
+		if (m.cmd==Message.Cmd.extend){
+			extendProxyConn(m);
+			while (true){
+				inputBackward.readFully(line,0,512);
+				m = Message.receiveMessage(line);
+				relayMessage(m,line);
+			}
+		}
+		if (m.cmd==Message.Cmd.begin){
+			sendData(m);		
+		}else{throw new IOException("wrong type of message");}
 			
 			
 			
@@ -155,10 +153,8 @@ public class Proxy{
 		try{
 			echoProxy = new ServerSocket(recvPort,1);//maximum 1 connection
 			
-			
-
 		} catch(IOException e){
-			System.out.println("Error: Failed to initialize socket");
+			System.out.println("Error: Failed to initialize socket"+e);
 		}
 		
 		/* listen and accept socket connections, initialize io streams, 
@@ -169,7 +165,7 @@ public class Proxy{
 
 			
 		} catch(IOException e){
-			System.out.println("Error: Failed to accept socket connections "+e.getMessage());
+			System.out.println("Error: Failed to accept socket connections "+e);
 		}
 		}
 	}
@@ -178,13 +174,10 @@ public class Proxy{
 	public static void main(String[] args) {
 		Proxy p1 = new Proxy();
 		p1.setHostname("localhost");
-		p1.setRecvPort(8080);
+		p1.setRecvPort(new Integer(args[0]));
 		p1.recieveMessage();
 		
-		Proxy p2 = new Proxy();
-		p2.setHostname("localhost");
-		p2.setRecvPort(8082);
-		p2.recieveMessage();
+		
 		//p.setSendPort(8081);
 		
 	}

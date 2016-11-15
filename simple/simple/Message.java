@@ -1,7 +1,7 @@
 package simple;
 public class Message {
 	
-	byte[] data;
+	byte[] data = new byte[0];
 	enum CellType {
 		not_selected,
 		control,
@@ -55,6 +55,7 @@ public class Message {
 			
 		} else {
 			data[2]=(byte) cmd.ordinal();
+			
 			int len = Math.min(498, this.data.length);
 			System.arraycopy(this.data,0,data,3,len);
 			
