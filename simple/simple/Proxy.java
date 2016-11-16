@@ -6,7 +6,10 @@ import java.net.ServerSocket;
 import java.net.UnknownHostException;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Scanner;
+
+import com.sun.xml.internal.bind.v2.Messages;
 
 import simple.Message;
 
@@ -162,31 +165,35 @@ public class Proxy extends Thread {
 
 	public void exchangeData(byte[] responseLine) throws IOException {
 		PrintWriter writer = new PrintWriter(forwardProxy.getOutputStream());
-		Scanner reader = new Scanner(forwardProxy.getInputStream()),
-				bleh= new Scanner( inputBackward);
+		BufferedReader reader = new BufferedReader(new InputStreamReader(forwardProxy.getInputStream())),
+				bleh= new BufferedReader(new InputStreamReader( inputBackward));
+		Message resp;
 		ArrayList<Message> messages = new ArrayList<>();
 		String text;
-		try {
-			while ( bleh.hasNext()) {
-				inputBackward.read(responseLine);
-					Message response = Message.receiveMessage(responseLine);
-					messages.add(response);
-
-			}
-		} catch (EOFException e) {
-			
-
-		}
-		text = Message.compose((Message[]) messages.toArray());
 		
+		
+		do{
+			inputBackward.read(responseLine);
+			resp = Message.receiveMessage(responseLine);
+			System.out.println(Arrays.toString(responseLine));
+			System.out.println(new String(responseLine,14,40));
+			//if(resp.cmd == Message.Cmd.end) break;
+			
+			messages.add(resp);
+		} while(bleh.ready());
+		System.out.println(messages);
+		text = Message.compose( messages);
+		System.out.println(text);
 		writer.print(text);
 		writer.flush();
 		
 		String response = "";
-		while (reader.hasNext()) {
-			response += reader.nextLine();
-		}
-
+		do{
+			response += reader.readLine()+"\r\n";
+	}
+			while (reader.ready()); 
+		
+System.out.println(response);
 		for (Message request : Message.decompose(response)) {
 			outputBackward.write(request.createMessage());
 		}
@@ -222,6 +229,7 @@ public class Proxy extends Thread {
 					extendProxyConn(m);
 					while (true) {
 						inputBackward.read(line);
+						System.out.println(Arrays.toString(line));
 						m = Message.receiveMessage(line);
 						relayMessage(m, line);
 					}

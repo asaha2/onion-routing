@@ -114,33 +114,36 @@ public class Client extends Thread {
 
 
 	public void generateMessage(byte[] responseLine) throws IOException {
-
+		BufferedReader br = new BufferedReader(new InputStreamReader(is));
 		String text = "GET / HTTP/1.1\r\n"; // HTTP connection
 		text += "Host: " + serverHostname + "\r\n\r\n";
 		ArrayList<Message> messages = new ArrayList<>();
-
+		Message response=new Message();
+		
 		for (Message request : Message.decompose(text)) {
+			response=request;
 			os.write(request.createMessage());
-		}
-		try {
-			Scanner bleh= new Scanner( is);
-			while ( bleh.hasNext()) {
-				is.read(responseLine);
-				//if (responseLine != null) {
-					Message response = Message.receiveMessage(responseLine);
-					// if (response.cmd!=Message.Cmd.connected) throw new
-					// IOException("Incorrect message! Connected expected.");
-					//
-					// System.out.println("Response from server: " +
-					// response.cmd);
-					messages.add(response);
-				//}
+			os.flush();
+			//os.write(request.createMessage());
 
-			}
-		} catch (EOFException e) {
-			
 		}
-		System.out.println(Message.compose((Message[]) messages.toArray()));
+		//os.write(response.createMessage());
+		System.out.println();
+		System.out.println(text);
+		
+		//while(true){
+		do{
+			is.read(responseLine);
+			response = Message.receiveMessage(responseLine);
+			
+			if(response.cmd == Message.Cmd.end) break;
+			
+			messages.add(response);
+		}while (br.ready());
+		//} 
+
+		
+		System.out.println(Message.compose( messages));
 	}
 
 	public void startConnection() {

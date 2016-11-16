@@ -1,5 +1,7 @@
 package simple;
 
+import java.util.ArrayList;
+
 public class Message {
 
 	static byte[] dat = new byte[0];
@@ -65,6 +67,7 @@ public class Message {
 			m.cmd = Cmd.values()[x];
 			int len = Message.bytesToInt(data, 12, 2);
 			m.data = new byte[len];
+			m.length= len;
 			System.arraycopy(data, 14, m.data, 0, len);
 		}
 		return m;
@@ -99,7 +102,9 @@ public class Message {
 		data[offset + 1] = (byte) a;
 		data[offset] = (byte) (a >> 8);
 	}
-
+ int length;
+ 
+ 
 	public static Message[] decompose(String text) {
 		byte[] wall = text.getBytes();
 		int numPackets = wall.length / 498 + 1;
@@ -109,7 +114,7 @@ public class Message {
 			lastPacketLength = 498;
 			numPackets--;
 		}
-		Message[] messages = new Message[numPackets];
+		Message[] messages = new Message[numPackets+1];
 		for (int i = 0; i < numPackets; i++) {
 			int len = 498;
 			if (i == numPackets - 1) {
@@ -122,24 +127,28 @@ public class Message {
 			m.data = new byte[len];
 			System.arraycopy(wall, 498 * i, m.data, 0, len);
 		}
+		Message m = new Message();
+		messages[numPackets ] = m;
+		m.type = CellType.proxy;
+		m.cmd = Cmd.end;
+		m.data = new byte[0];
 
 		return messages;
 	}
 
-	public static String compose(Message[] messages) {
-		int p = messages.length, numBytes = messages.length * 498;
+	public static String compose(ArrayList<Message> messages) {
+		int p = messages.size(), numBytes = (p-1) * 498 + messages.get(p-1).length, i = 0;
 
 		byte[] wall = new byte[numBytes];
 		int len = 498;
-		for (int i = 0; i < p; i++) {
-			if (i == p - 1) {
-				len = bytesToInt(messages[i].data, 11, 2);
-			}
+		for (Message m : messages ) {
+			len=m.length;
 
-			System.arraycopy(messages[i].data, 0, wall, 498 * i, len);
+			System.arraycopy(m.data, 0, wall, 498 * i, len);
+			i++;
 		}
 
-		return new String(wall, 0, numBytes - 498 + len);
+		return new String(wall);
 	}
 
 }
