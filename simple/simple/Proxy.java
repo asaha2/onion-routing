@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import simple.Message;
+import simple.Message.Cmd;
 
 /* usage: java Proxy <hostname> <source-port> <destination-port> */
 
@@ -66,12 +67,20 @@ public class Proxy extends Thread {
 	private void relayMessage(Message m, byte[] responseLine) throws IOException {
 		responseLine = m.createMessage();
 
-		System.out.println("Client said:" + m.cmd + "\n" + Arrays.toString(responseLine));
+		System.out.print("Message from Previous hop : " + m.cmd);
+		if (m.cmd == Cmd.DATA)
+			System.out.println(m.length);
+		else
+			System.out.println();
 		outputForward.write(responseLine);// ask next
 
 		inputForward.read(responseLine);
 		m = Message.receiveMessage(responseLine);
-		System.out.println("Exitnode said:" + m.cmd + "\n" + Arrays.toString(responseLine));
+		System.out.println("Message from Next hop : " + m.cmd);
+		if (m.cmd == Cmd.DATA)
+			System.out.println(" of length " + m.length + " bytes ");
+		else
+			System.out.println();
 
 		outputBackward.write(m.createMessage());
 	}
@@ -85,11 +94,12 @@ public class Proxy extends Thread {
 		}
 
 		System.out.println(
-				"got extend from " + backwardProxy.getInetAddress().toString() + " " + backwardProxy.getPort());
+				"Request to EXTEND connection from " + backwardProxy.getInetAddress().toString() + ":"
+						+ backwardProxy.getPort());
 
 		Message create = new Message();
-		create.type = Message.CellType.control;
-		create.cmd = Message.Cmd.create;
+		create.type = Message.CellType.CONTROL;
+		create.cmd = Message.Cmd.CREATE;
 		String[] host = (new String(m.data)).split(":");
 		forwardProxy = new Socket(host[0], new Integer(host[1]));
 		inputForward = new DataInputStream(forwardProxy.getInputStream());
@@ -100,15 +110,15 @@ public class Proxy extends Thread {
 		if (responseLine != null) {
 			Message created = Message.receiveMessage(responseLine);
 
-			if (created.cmd != Message.Cmd.created)
+			if (created.cmd != Message.Cmd.CREATED)
 				throw new IOException("Incorrect message");
 
-			System.out.println("Got created from 2nd hop ");
+			System.out.println("Successfully CREATED connection with " + new String(m.data));
 		}
 
 		Message extended = new Message();
-		extended.type = Message.CellType.proxy;
-		extended.cmd = Message.Cmd.extended;
+		extended.type = Message.CellType.PROXY;
+		extended.cmd = Message.Cmd.EXTENDED;
 
 		// for (byte mess : create.createMeassage()){
 		outputBackward.write(extended.createMessage());
@@ -125,12 +135,12 @@ public class Proxy extends Thread {
 		// while(true){
 		inputBackward.read(line);
 		Message m = Message.receiveMessage(line);
-		if (m.cmd == Message.Cmd.create) {
+		if (m.cmd == Message.Cmd.CREATE) {
 			Message created = new Message();
 
-			created.type = Message.CellType.control;
-			created.cmd = Message.Cmd.created;
-			System.out.println("got create packet from " + backwardProxy.getInetAddress().toString() + " "
+			created.type = Message.CellType.CONTROL;
+			created.cmd = Message.Cmd.CREATED;
+			System.out.println("Request to CREATE connection from  " + backwardProxy.getInetAddress().toString() + ":"
 					+ backwardProxy.getPort());
 
 			outputBackward.write(created.createMessage());
@@ -153,10 +163,10 @@ public class Proxy extends Thread {
 		inputForward = new DataInputStream(forwardProxy.getInputStream());
 		outputForward = new DataOutputStream(forwardProxy.getOutputStream());
 		Message connected = new Message();
-		connected.type = Message.CellType.proxy;
-		connected.cmd = Message.Cmd.connected;
-		System.out.println(
-				"got extend from " + backwardProxy.getInetAddress().toString() + " " + backwardProxy.getPort());
+		connected.type = Message.CellType.PROXY;
+		connected.cmd = Message.Cmd.CONNECTED;
+		System.out.println("Request to BEGIN connection from " + backwardProxy.getInetAddress().toString() + ":"
+				+ backwardProxy.getPort() + " to " + new String(m.data));
 
 		outputBackward.write(connected.createMessage());
 
@@ -174,16 +184,20 @@ public class Proxy extends Thread {
 		do {
 			inputBackward.read(responseLine);
 			resp = Message.receiveMessage(responseLine);
-			outputBackward.write(responseLine);
+
 			// System.out.println(Arrays.toString(responseLine));
 			// System.out.println(new String(responseLine,14,40));
-			// if(resp.cmd == Message.Cmd.end) break;
-
+			if (resp.cmd == Message.Cmd.END)
+				break;
+			/* trash */
+			responseLine[2] = (byte) Message.Cmd.KEEP_ALIVE_PADDING.ordinal();
+			outputBackward.write(responseLine);
 			messages.add(resp);
 
-		} while (bleh.ready());
-		System.out.println(messages);
+		} while (true);
+		//System.out.println(messages);
 		text = Message.compose(messages);
+		System.out.println("Decoded message:");
 		System.out.println(text);
 		writer.print(text);
 		writer.flush();
@@ -192,14 +206,19 @@ public class Proxy extends Thread {
 		do {
 			response += reader.readLine() + "\r\n";
 		} while (reader.ready());
-		response = response + response + response;
 		System.out.println(response);
+		//response = response + response + response;
+		System.out.println("Received data from" + forwardProxy.getInetAddress().getHostName());
 		for (Message request : Message.decompose(response)) {
 			outputBackward.write(request.createMessage());
-			if (request.cmd != Message.Cmd.end) {
+			if (request.cmd != Message.Cmd.END) {
 				/* trash */ inputBackward.read(responseLine);
 			}
 		}
+		System.out.println("End of communication");
+		System.out.println("Waiting for more connections");
+
+
 
 	}
 
@@ -220,52 +239,68 @@ public class Proxy extends Thread {
 		 * listen and accept socket connections, initialize io streams, echo
 		 * data back to client as long as receiving data
 		 */
-		while (true) {
-			try {
+
+		try {
+			while (true) {
 				acceptProxyConn();
 				byte[] line = new byte[512];
 				inputBackward.read(line);
 
 				Message m = Message.receiveMessage(line);
 
-				if (m.cmd == Message.Cmd.extend) {
+				if (m.cmd == Message.Cmd.EXTEND) {
 					extendProxyConn(m);
 					while (true) {
-						inputBackward.read(line);
-						// System.out.println(Arrays.toString(line));
-						m = Message.receiveMessage(line);
-						relayMessage(m, line);
+						try {
+							inputBackward.read(line);
+							// System.out.println(Arrays.toString(line));
+							m = Message.receiveMessage(line);
+							relayMessage(m, line);
+						} catch (IOException e) {
+							System.out.println("Finished relaying");
+							System.out.println("Waiting for more connections");
+							break;
+						}
 					}
 				}
-				if (m.cmd == Message.Cmd.begin) {
+
+				if (m.cmd == Message.Cmd.BEGIN) {
 					handshake(m);
 					exchangeData(line);
 					outputBackward.close();
 					outputForward.close();
+					break;
 				} else {
-					throw new IOException("Wrong type of message. begin Expected, obtained" + m.cmd);
+					while(true);
+					//throw new IOException("Wrong type of message. begin Expected, obtained" + m.cmd);
+
 				}
-				forwardProxy.close();
-				backwardProxy.close();
-			} catch (IOException e) {
-				// System.out.println("Error: Failed to accept socket
-				// connections " + e);
-				e.printStackTrace();
 			}
+			forwardProxy.close();
+			backwardProxy.close();
+		} catch (IOException e) {
+			// System.out.println("Error: Failed to accept socket
+			// connections " + e);
+			e.printStackTrace();
 		}
+
 	}
 
 	public static void main(String[] args) {
-		int port =8080;
-		String host =null;
-		if (args.length==1){
-			port=Integer.parseInt(args[0]);
+		int port = 8080;
+		String host = null;
+		if (args.length == 1) {
+			port = Integer.parseInt(args[0]);
 		}
-		if (args.length==2){
-			host=args[0];
-			port=Integer.parseInt(args[1]);
+		if (args.length == 2) {
+			host = args[0];
+			port = Integer.parseInt(args[1]);
 		}
 		Proxy p = new Proxy(host, port);
+		System.out.println("New Proxy Server opened in port "+port);
+
+		System.out.println("Waiting for more connections");
+
 		// p.start();
 
 		p.recieveMessage();

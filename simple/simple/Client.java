@@ -3,16 +3,19 @@ package simple;
 import java.io.*;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.security.Key;
 import java.util.ArrayList;
 import java.util.Arrays;
+
+import javax.crypto.spec.SecretKeySpec;
 
 import simple.Message;
 
 /* usage: java Client <hostname> <port-number> */
 
 public class Client extends Thread {
-	public String hop1Hostname, hop2Hostname, serverHostname;
-	public int hop1port, hop2port, serverPort = 80;
+	public String hop1Hostname,hop2Hostname ,hop3Hostname, serverHostname;
+	public int hop1port, hop2port, hop3port, serverPort = 80;
 	boolean successfulConnection = false;
 	private DataOutputStream os = null;
 	private DataInputStream is = null;
@@ -56,26 +59,26 @@ public class Client extends Thread {
 	private void initProxyConn(byte[] responseLine) throws IOException {
 		// System.out.println("User input: " + userLine);
 		Message create = new Message();
-		create.type = Message.CellType.control;
-		create.cmd = Message.Cmd.create;
+		create.type = Message.CellType.CONTROL;
+		create.cmd = Message.Cmd.CREATE;
 
 		// for (byte mess : create.createMeassage()){
 		os.write(create.createMessage());
 		is.read(responseLine);
 		if (responseLine != null) {
 			Message created = Message.receiveMessage(responseLine);
-			if (created.cmd != Message.Cmd.created)
+			if (created.cmd != Message.Cmd.CREATED)
 				throw new IOException("Incorrect message");
 
-			System.out.println("Response from server: " + created.cmd);
+			System.out.println("Successfully CREATED connection with "+hop1Hostname+":"+hop1port);
 		}
 	}
 
 	public void initExtendedProxyConn(byte[] responseLine) throws IOException {
 		Message extend = new Message();
 
-		extend.type = Message.CellType.proxy;
-		extend.cmd = Message.Cmd.extend;
+		extend.type = Message.CellType.PROXY;
+		extend.cmd = Message.Cmd.EXTEND;
 		extend.data = (hop2Hostname + ":" + hop2port + "").getBytes();
 
 		// for (byte mess : create.createMeassage()){
@@ -83,18 +86,18 @@ public class Client extends Thread {
 		is.read(responseLine);
 		if (responseLine != null) {
 			Message extented = Message.receiveMessage(responseLine);
-			if (extented.cmd != Message.Cmd.extended)
+			if (extented.cmd != Message.Cmd.EXTENDED)
 				throw new IOException("Incorrect message");
 
-			System.out.println("Response from server: " + extented.cmd);
+			System.out.println("Successfully EXTENDED connection with "+hop2Hostname+":"+hop2port);
 		}
 	}
 
 	public void initDataTransfer(byte[] responseLine) throws IOException {
 		Message request = new Message();
 
-		request.type = Message.CellType.proxy;
-		request.cmd = Message.Cmd.begin;
+		request.type = Message.CellType.PROXY;
+		request.cmd = Message.Cmd.BEGIN;
 		request.data = (serverHostname + ":" + serverPort + "").getBytes();
 
 		// for (byte mess : create.createMeassage()){
@@ -102,10 +105,10 @@ public class Client extends Thread {
 		is.read(responseLine);
 		if (responseLine != null) {
 			Message response = Message.receiveMessage(responseLine);
-			if (response.cmd != Message.Cmd.connected)
+			if (response.cmd != Message.Cmd.CONNECTED)
 				throw new IOException("Incorrect message! Connected expected.");
 
-			System.out.println("Response from server: " + response.cmd);
+			System.out.println("Successfully CONNECTED  with "+serverHostname);
 		}
 	}
 
@@ -121,35 +124,40 @@ public class Client extends Thread {
 			response = request;
 			os.write(request.createMessage());
 			// os.flush();
-			if (request.cmd != Message.Cmd.end) {
-				/* trash */ is.read(responseLine);
+			if (request.cmd != Message.Cmd.END) {
 			}
 
 		}
 		// os.write(response.createMessage());
-		System.out.println();
-		System.out.println(text);
+		//System.out.println("Encoding request:");
+		//System.out.println(text);
 
 		// while(true){
+		
 		do {
 			is.read(responseLine);
 			response = Message.receiveMessage(responseLine);
 
-			if (response.cmd == Message.Cmd.end) {
-				System.out.println("got end");
+			if (response.cmd == Message.Cmd.END) {
+				//System.out.println("got end");
 				break;
 
 			}
-			/* trash */ os.write(responseLine);
-			System.out.println(Arrays.toString(responseLine));
+			/* trash */responseLine[2] = (byte) Message.Cmd.KEEP_ALIVE_PADDING.ordinal(); os.write(responseLine);
+			//System.out.println("Got block of data of legth");
 			messages.add(response);
 		} while (true);
 		// }
-		System.out.println("closing");
+		//System.out.println("closing");
 		is.close();
 		os.close();
-
-		System.out.println(Message.compose(messages));
+		
+		text = Message.compose(messages);
+		//System.out.println(text);
+		PrintWriter writer = new PrintWriter(saveFileName, "UTF-8");
+		writer.print(text);
+	    writer.close();
+	    System.out.println("Wrote to file '"+saveFileName+"'");
 	}
 
 	public void startConnection() {
@@ -206,11 +214,10 @@ public class Client extends Thread {
 		successfulConnection = true;
 
 	}
-
+	String saveFileName ="index.html";
 	public static void main(String[] args) {
 		Client c = new Client();
-
-		if (args.length == 1) {
+		if (args.length == 1 || args.length == 2) {
 
 			c.hop1Hostname = "35.162.165.63"; // args[0];
 			c.hop1port = 8080; // Integer.parseInt(args[1]);
@@ -218,13 +225,18 @@ public class Client extends Thread {
 			c.hop2port = 8080;// Integer.parseInt(args[3]);
 			c.serverHostname = args[0];// "www.google.com";
 			c.serverPort = 80;
+			if (args.length == 2){
+				c.saveFileName=args[1];
+			}
 		}
-		if (args.length == 4) {
+		if (args.length == 6) {
 
 			c.hop1Hostname = args[0];
 			c.hop1port = Integer.parseInt(args[1]);
 			c.hop2Hostname = args[2];
 			c.hop2port = Integer.parseInt(args[3]);
+			c.hop3Hostname = args[4];
+			c.hop3port = Integer.parseInt(args[5]);
 			c.serverHostname = "www.google.com";
 			c.serverPort = 80;
 		}

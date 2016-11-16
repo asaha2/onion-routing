@@ -8,15 +8,15 @@ public class Message {
 	byte[] data = dat;
 
 	enum CellType {
-		not_selected, control, proxy
+		NOT_SELECTED, CONTROL, PROXY
 	}
 
 	enum Cmd {
-		not_selected,
+		NOT_SELECTED,
 		// Control
-		padding, create, created, destroy,
+		KEEP_ALIVE_PADDING, CREATE, CREATED, DESTROY,
 		// Proxy
-		relay, data, begin, end, teardown, connected, extend, extended, truncate, truncated, sendme, drop
+		RELAY, DATA, BEGIN, END, teardown, CONNECTED, EXTEND, EXTENDED, truncate, truncated, sendme, drop
 	}
 
 	public CellType type;
@@ -31,7 +31,7 @@ public class Message {
 
 
 	public boolean isCreate() {
-		return this.cmd == Cmd.create;
+		return this.cmd == Cmd.CREATE;
 	}
 
 	public byte[] createMessage() {
@@ -39,8 +39,8 @@ public class Message {
 		byte[] data = new byte[512];
 		shortToBytes(circID, data, 0);
 
-		if (type == CellType.proxy) {
-			data[2] = (byte) Cmd.relay.ordinal();
+		if (type == CellType.PROXY) {
+			data[2] = (byte) Cmd.RELAY.ordinal();
 			data[13] = (byte) cmd.ordinal();
 			int len = Math.min(498, this.data.length);
 			shortToBytes(len, data, 11);
@@ -61,8 +61,8 @@ public class Message {
 		Message m = new Message();
 		byte x = data[2];
 		m.cmd = Cmd.values()[x];
-		if (x == Cmd.relay.ordinal()) {
-			m.type = CellType.proxy;
+		if (x == Cmd.RELAY.ordinal()) {
+			m.type = CellType.PROXY;
 			x = data[13];
 			m.cmd = Cmd.values()[x];
 			int len = Message.bytesToInt(data, 12, 2);
@@ -105,8 +105,8 @@ public class Message {
  int length;
  	public static Message padding(){
  		Message m = new Message();
- 		m.type = CellType.control;
- 		m.cmd = Cmd.padding;
+ 		m.type = CellType.CONTROL;
+ 		m.cmd = Cmd.KEEP_ALIVE_PADDING;
  		
  		return m;
  	}
@@ -128,15 +128,15 @@ public class Message {
 			}
 			Message m = new Message();
 			messages[i] = m;
-			m.type = CellType.proxy;
-			m.cmd = Cmd.data;
+			m.type = CellType.PROXY;
+			m.cmd = Cmd.DATA;
 			m.data = new byte[len];
 			System.arraycopy(wall, 498 * i, m.data, 0, len);
 		}
 		Message m = new Message();
 		messages[numPackets ] = m;
-		m.type = CellType.proxy;
-		m.cmd = Cmd.end;
+		m.type = CellType.PROXY;
+		m.cmd = Cmd.END;
 		m.data = new byte[0];
 
 		return messages;
