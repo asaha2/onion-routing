@@ -9,8 +9,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
 
-import com.sun.xml.internal.bind.v2.Messages;
-
 import simple.Message;
 
 /* usage: java Proxy <hostname> <source-port> <destination-port> */
