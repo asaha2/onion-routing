@@ -103,7 +103,13 @@ public class Message {
 		data[offset] = (byte) (a >> 8);
 	}
  int length;
- 
+ 	public static Message padding(){
+ 		Message m = new Message();
+ 		m.type = CellType.control;
+ 		m.cmd = Cmd.padding;
+ 		
+ 		return m;
+ 	}
  
 	public static Message[] decompose(String text) {
 		byte[] wall = text.getBytes();
@@ -137,7 +143,7 @@ public class Message {
 	}
 
 	public static String compose(ArrayList<Message> messages) {
-		int p = messages.size(), numBytes = (p-1) * 498 + messages.get(p-1).length, i = 0;
+		int p = messages.size(), numBytes = (p) * 498, i = 0;
 
 		byte[] wall = new byte[numBytes];
 		int len = 498;
@@ -148,7 +154,7 @@ public class Message {
 			i++;
 		}
 
-		return new String(wall);
+		return new String(wall,0,numBytes-498+len);
 	}
 
 }

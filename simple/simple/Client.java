@@ -4,7 +4,7 @@ import java.io.*;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Scanner;
+import java.util.Arrays;
 
 import simple.Message;
 
@@ -19,7 +19,7 @@ public class Client extends Thread {
 	Proxy[] proxies = new Proxy[5];
 	Thread t;
 
-	public Client () {
+	public Client() {
 
 	}
 
@@ -33,7 +33,7 @@ public class Client extends Thread {
 		c.hop1Hostname = proxies[0].hostname;
 		c.hop1port = proxies[0].recvPort;
 		c.hop2port = proxies[1].recvPort;
-		
+
 		System.out.println(hop1Hostname + ":" + hop1port + " " + hop2Hostname + ":" + hop2port + " ");
 		c.serverHostname = "www.google.com";
 		c.serverPort = 80;
@@ -41,20 +41,17 @@ public class Client extends Thread {
 		c.startConnection();
 	}
 
-//	public void start() {
-//		System.out.println("Starting Clinet");
-//		if(t==null) {
-//			t = new Thread("Client");
-//			t.start();
-//		}
-//	}
+	// public void start() {
+	// System.out.println("Starting Clinet");
+	// if(t==null) {
+	// t = new Thread("Client");
+	// t.start();
+	// }
+	// }
 
 	public boolean isConnSuccessful() {
 		return successfulConnection;
 	}
-
-
-
 
 	private void initProxyConn(byte[] responseLine) throws IOException {
 		// System.out.println("User input: " + userLine);
@@ -112,38 +109,47 @@ public class Client extends Thread {
 		}
 	}
 
-
 	public void generateMessage(byte[] responseLine) throws IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(is));
 		String text = "GET / HTTP/1.1\r\n"; // HTTP connection
 		text += "Host: " + serverHostname + "\r\n\r\n";
 		ArrayList<Message> messages = new ArrayList<>();
-		Message response=new Message();
-		
+		Message response = new Message();
+		// Message.padding().createMessage();
+
 		for (Message request : Message.decompose(text)) {
-			response=request;
+			response = request;
 			os.write(request.createMessage());
-			os.flush();
-			//os.write(request.createMessage());
+			// os.flush();
+			if (request.cmd != Message.Cmd.end) {
+				/* trash */ is.read(responseLine);
+			}
 
 		}
-		//os.write(response.createMessage());
+		// os.write(response.createMessage());
 		System.out.println();
 		System.out.println(text);
-		
-		//while(true){
-		do{
+
+		// while(true){
+		do {
 			is.read(responseLine);
 			response = Message.receiveMessage(responseLine);
-			
-			if(response.cmd == Message.Cmd.end) break;
-			
-			messages.add(response);
-		}while (br.ready());
-		//} 
 
-		
-		System.out.println(Message.compose( messages));
+			if (response.cmd == Message.Cmd.end) {
+				System.out.println("got end");
+				break;
+
+			}
+			/* trash */ os.write(responseLine);
+			System.out.println(Arrays.toString(responseLine));
+			messages.add(response);
+		} while (true);
+		// }
+		System.out.println("closing");
+		is.close();
+		os.close();
+
+		System.out.println(Message.compose(messages));
 	}
 
 	public void startConnection() {
@@ -155,8 +161,8 @@ public class Client extends Thread {
 		// String responseLine, userLine;
 		byte[] responseLine = new byte[512];
 
-		/* open socket in hostname on port xxxx, initialize io streams */ 
-		try{
+		/* open socket in hostname on port xxxx, initialize io streams */
+		try {
 
 			clientSocket = new Socket(hop1Hostname, hop1port);
 			System.out.println("Created socket for " + hop1Hostname);
@@ -167,7 +173,6 @@ public class Client extends Thread {
 		} catch (IOException e) {
 			System.err.println("Error: Unreachable host.");
 		}
-
 
 		/* continually transmit data via opened sockets */
 		if (clientSocket != null && os != null && is != null) {
@@ -189,8 +194,8 @@ public class Client extends Thread {
 
 		/* close io streams and opened sockets */
 		try {
-			os.close();
-			is.close();
+			// os.close();
+			// is.close();
 			clientSocket.close();
 		} catch (UnknownHostException e) {
 			System.err.println("Trying to connect to unknown host: " + e);
@@ -204,21 +209,28 @@ public class Client extends Thread {
 
 	public static void main(String[] args) {
 		Client c = new Client();
-		c.hop1Hostname= args[0];
-		c.hop1port=Integer.parseInt(args[1]);
-		c.hop2Hostname= args[2];
-		c.hop2port=Integer.parseInt(args[3]);
-		c.serverHostname="www.google.com";
-		c.serverPort=80;
-//=======
-//		c.hop2Hostname = c.hop1Hostname = "127.0.0.1";
-//		c.hop1port = 8080;
-//		c.hop2port = 8082;
-//		c.serverHostname = "www.google.com";
-//		c.serverPort = 80;
-//>>>>>>> 580d564... freezes
 
-	c.startConnection();
+		if (args.length == 1) {
+
+			c.hop1Hostname = "35.162.165.63"; // args[0];
+			c.hop1port = 8080; // Integer.parseInt(args[1]);
+			c.hop2Hostname = "35.161.60.16";// args[2];
+			c.hop2port = 8080;// Integer.parseInt(args[3]);
+			c.serverHostname = args[0];// "www.google.com";
+			c.serverPort = 80;
+		}
+		if (args.length == 4) {
+
+			c.hop1Hostname = args[0];
+			c.hop1port = Integer.parseInt(args[1]);
+			c.hop2Hostname = args[2];
+			c.hop2port = Integer.parseInt(args[3]);
+			c.serverHostname = "www.google.com";
+			c.serverPort = 80;
+		}
+
+
+		c.startConnection();
 		// Make header + message
 		// get proxies
 		// choose 2 proxies at random
