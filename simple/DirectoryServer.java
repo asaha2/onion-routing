@@ -1,14 +1,22 @@
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.TreeMap;
+
 import simple.Client;
 import simple.Proxy;
 
 public class DirectoryServer {
-	HashMap<String, String> proxies;
+	TreeMap<String, String> proxies;
 	HashMap<String, String> destinationServers;
 	String directoryServer;
 	
-	int port = 80; 		//whatever
+	int port = 8080; 		//whatever
 	
 	public void addServer(String serverName, String hostname, String serverType) {
 		if (serverType.equals("proxy")) {
@@ -25,7 +33,7 @@ public class DirectoryServer {
 	 */
 	
 	public DirectoryServer() {
-		proxies = new HashMap<String, String>();
+		proxies = new TreeMap<String, String>();
 		addServer("Proxy0", "35.162.165.63", "proxy");
 		addServer("Proxy1", "35.161.60.16", "proxy");
 		addServer("Proxy2", "35.162.181.227", "proxy");
@@ -39,6 +47,42 @@ public class DirectoryServer {
 		
 	}
 	
+	public void run() throws Exception{
+		ServerSocket echoProxy;
+		Socket serverSocket;
+		BufferedReader is;
+		PrintWriter os;
+		try{
+			echoProxy = new ServerSocket(port, 1);
+		}catch(Exception e){
+			throw e;
+		}
+		while (true){
+			try {
+				serverSocket = echoProxy.accept();
+				is = new BufferedReader(new InputStreamReader(serverSocket.getInputStream()));
+				os = new PrintWriter(serverSocket.getOutputStream(), true);
+				String line = is.readLine();
+				if (null != line && line.equals("client")){
+					for (String p: proxies.values()){
+						os.println(p);
+					}
+				}
+				if (null != line && line.equals("proxy")){
+					 is.readLine();
+					 if (null != line ){
+						 addServer("Proxy"+proxies.size(), line, "proxy");
+					 }
+					
+				}
+				
+				serverSocket.close();
+			} catch (IOException e) {
+				e.printStackTrace();				
+			}
+			
+		}
+	}
 	//method will return list of unique available IP addresses of destination server
 	public HashSet<String> requestDestinationServers() {
 		
@@ -89,23 +133,30 @@ public class DirectoryServer {
 		return false;
 	}
 	
+	
+	
+	
 	public String getDirectoryServer() {
 		return directoryServer;
 	}
 	
 	public static void main(String args[]) {
-		DirectoryServer dirServer = new DirectoryServer();
-		Proxy[] prx = new Proxy[2];
+	DirectoryServer dirServer = new DirectoryServer();
+	while(true){try{		System.out.println("Started");
+
+	dirServer.run();
+	}catch (Exception e){e.printStackTrace(System.err);}}
+//		Proxy[] prx = new Proxy[2];
+//		
+//		prx[0] = new Proxy("35.162.165.63", 8080);
+//		prx[1] = new Proxy("35.161.60.16", 8082);
+//		Client c = new Client(prx);
+//		
+//		prx[0].start();
+//		prx[1].start();
+//		c.start();
+//		
 		
-		prx[0] = new Proxy("35.162.165.63", 8080);
-		prx[1] = new Proxy("35.161.60.16", 8082);
-		Client c = new Client(prx);
-		
-		prx[0].start();
-		prx[1].start();
-		c.start();
-		
-		System.out.println("Started");
 
 	}
 }

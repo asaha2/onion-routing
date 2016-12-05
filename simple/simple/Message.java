@@ -1,11 +1,12 @@
 package simple;
 
 import java.util.ArrayList;
+import simple.CaesarCipher;
 
 public class Message {
 
-	static byte[] dat = new byte[0];
-	byte[] data = dat;
+	static byte[] empty = new byte[0];
+	byte[] data = empty;
 
 	enum CellType {
 		NOT_SELECTED, CONTROL, PROXY
@@ -34,7 +35,7 @@ public class Message {
 		return this.cmd == Cmd.CREATE;
 	}
 
-	public byte[] createMessage() {
+	public byte[] createMessage(int... key) {
 		// TODO Generate random circID
 		byte[] data = new byte[512];
 		shortToBytes(circID, data, 0);
@@ -44,6 +45,12 @@ public class Message {
 			data[13] = (byte) cmd.ordinal();
 			int len = Math.min(498, this.data.length);
 			shortToBytes(len, data, 11);
+			
+			for(int i = key.length; i>0; i--){
+				CaesarCipher.dataEncryption(this.data, key[i - 1], 0);
+			}
+			
+			
 			System.arraycopy(this.data, 0, data, 14, len);
 
 		} else {
@@ -57,18 +64,22 @@ public class Message {
 	}
 
 
-	public static Message receiveMessage(byte[] data) {
+	public static Message receiveMessage(byte[] data, int ... key) {
 		Message m = new Message();
-		byte x = data[2];
-		m.cmd = Cmd.values()[x];
-		if (x == Cmd.RELAY.ordinal()) {
+		byte cmd_value = data[2];
+		m.cmd = Cmd.values()[cmd_value];
+		if (cmd_value == Cmd.RELAY.ordinal()) {
 			m.type = CellType.PROXY;
-			x = data[13];
-			m.cmd = Cmd.values()[x];
+			cmd_value = data[13];
+			m.cmd = Cmd.values()[cmd_value];
 			int len = Message.bytesToInt(data, 12, 2);
 			m.data = new byte[len];
 			m.length= len;
 			System.arraycopy(data, 14, m.data, 0, len);
+			
+			for(int i =0; i< key.length;i++){
+				CaesarCipher.dataDecryption(m.data, key[i], 0);
+			}
 		}
 		return m;
 
