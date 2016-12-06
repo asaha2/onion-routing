@@ -1,0 +1,774 @@
+Last login: Mon Dec  5 14:22:56 on ttys003
+^  ~ cd Github/onion-routing
+^  ~/Github/onion-routing git:(master) ✗ cd simple
+^  ~/Github/onion-routing/simple git:(master) ✗ javac simple/*
+javac: invalid flag: simple/Client.class
+Usage: javac <options> <source files>
+use -help for a list of possible options
+^  ~/Github/onion-routing/simple git:(master) ✗ javac simple/Client.java
+^  ~/Github/onion-routing/simple git:(master) ✗ javac simple/Message.java
+^  ~/Github/onion-routing/simple git:(master) ✗ javac simple/CaesarCipher.java
+
+^  ~/Github/onion-routing/simple git:(master) ✗ java simple/Client www.google.com
+Time taken to connect to directory and choose hops:193 ms
+Created socket for 35.162.165.63
+Successfully CREATED connection with 35.162.165.63:8080 Using Cipher Key 41
+Successfully EXTENDED connection with 35.161.60.16:8080 Using Cipher Key 10
+Successfully CONNECTED  with www.google.com
+Website Connection time: 344 ms
+IOException:  java.net.SocketException: Broken pipe (Write failed)
+^  ~/Github/onion-routing/simple git:(master) ✗ java simple/Client www.google.com
+Time taken to connect to directory and choose hops:202 ms
+Error: Unreachable host.
+Exception in thread "main" java.lang.NullPointerException
+	at simple.Client.startConnection(Client.java:198)
+	at simple.Client.main(Client.java:272)
+^  ~/Github/onion-routing/simple git:(master) ✗ java simple/Client www.google.com
+Time taken to connect to directory and choose hops:202 ms
+Created socket for 35.162.165.63
+Successfully CREATED connection with 35.162.165.63:8080 Using Cipher Key 20
+Successfully EXTENDED connection with 35.161.60.16:8080 Using Cipher Key 6
+Successfully CONNECTED  with www.google.com
+Website Connection time: 363 ms
+Wrote to file 'index.html'
+Total Response  time: 8447 ms
+^  ~/Github/onion-routing/simple git:(master) ✗ java simple/Client www.yahoo.com
+Time taken to connect to directory and choose hops:193 ms
+Created socket for 35.162.165.63
+Successfully CREATED connection with 35.162.165.63:8080 Using Cipher Key 13
+Successfully EXTENDED connection with 35.161.60.16:8080 Using Cipher Key 30
+Successfully CONNECTED  with www.yahoo.com
+Website Connection time: 353 ms
+Wrote to file 'index.html'
+Total Response  time: 696 ms
+^  ~/Github/onion-routing/simple git:(master) ✗ java simple/Client www.youtube.com
+Time taken to connect to directory and choose hops:190 ms
+Created socket for 35.162.165.63
+Successfully CREATED connection with 35.162.165.63:8080 Using Cipher Key 50
+Successfully EXTENDED connection with 35.161.60.16:8080 Using Cipher Key 48
+Successfully CONNECTED  with www.youtube.com
+Website Connection time: 377 ms
+Wrote to file 'index.html'
+Total Response  time: 815 ms
+^  ~/Github/onion-routing/simple git:(master) ✗ java simple/Client www.amazon.com
+Time taken to connect to directory and choose hops:211 ms
+Created socket for 35.162.165.63
+Successfully CREATED connection with 35.162.165.63:8080 Using Cipher Key 40
+Successfully EXTENDED connection with 35.161.60.16:8080 Using Cipher Key 14
+Successfully CONNECTED  with www.amazon.com
+Website Connection time: 505 ms
+Wrote to file 'index.html'
+Total Response  time: 849 ms
+^  ~/Github/onion-routing/simple git:(master) ✗ java simple/Client www.facebook.com
+Time taken to connect to directory and choose hops:192 ms
+Created socket for 35.162.165.63
+Successfully CREATED connection with 35.162.165.63:8080 Using Cipher Key 24
+Successfully EXTENDED connection with 35.161.60.16:8080 Using Cipher Key 39
+Successfully CONNECTED  with www.facebook.com
+Website Connection time: 452 ms
+Wrote to file 'index.html'
+Total Response  time: 798 ms
+^  ~/Github/onion-routing/simple git:(master) ✗ java simple/Client www.mcgill.ca
+Time taken to connect to directory and choose hops:194 ms
+Created socket for 35.162.165.63
+Successfully CREATED connection with 35.162.165.63:8080 Using Cipher Key 29
+Successfully EXTENDED connection with 35.161.60.16:8080 Using Cipher Key 8
+Successfully CONNECTED  with www.mcgill.ca
+Website Connection time: 613 ms
+Wrote to file 'index.html'
+Total Response  time: 8893 ms
+^  ~/Github/onion-routing/simple git:(master) ✗ javac simple/Client1Hop.java
+^  ~/Github/onion-routing/simple git:(master) ✗ javac simple/Client3hops.java
+^  ~/Github/onion-routing/simple git:(master) ✗ java simple/Client1Hop www.mcgill.ca
+java.net.SocketException: Socket closed
+	at java.net.SocketInputStream.socketRead0(Native Method)
+	at java.net.SocketInputStream.socketRead(SocketInputStream.java:116)
+	at java.net.SocketInputStream.read(SocketInputStream.java:170)
+	at java.net.SocketInputStream.read(SocketInputStream.java:141)
+	at sun.nio.cs.StreamDecoder.readBytes(StreamDecoder.java:284)
+	at sun.nio.cs.StreamDecoder.implRead(StreamDecoder.java:326)
+	at sun.nio.cs.StreamDecoder.read(StreamDecoder.java:178)
+	at java.io.InputStreamReader.read(InputStreamReader.java:184)
+	at java.io.BufferedReader.fill(BufferedReader.java:161)
+	at java.io.BufferedReader.readLine(BufferedReader.java:324)
+	at java.io.BufferedReader.readLine(BufferedReader.java:389)
+	at simple.Client1Hop.chooseHops(Client1Hop.java:221)
+	at simple.Client1Hop.main(Client1Hop.java:251)
+Created socket for 35.162.165.63
+Successfully CREATED connection with 35.162.165.63:8080 Using Cipher Key 23
+Successfully CONNECTED  with www.mcgill.ca
+Website Connection time: 405 ms
+Wrote to file 'index.html'
+Total Response  time: 10959 ms
+^  ~/Github/onion-routing/simple git:(master) ✗ java simple/Client1Hop www.mcgill.ca
+java.net.SocketException: Socket closed
+	at java.net.SocketInputStream.socketRead0(Native Method)
+	at java.net.SocketInputStream.socketRead(SocketInputStream.java:116)
+	at java.net.SocketInputStream.read(SocketInputStream.java:170)
+	at java.net.SocketInputStream.read(SocketInputStream.java:141)
+	at sun.nio.cs.StreamDecoder.readBytes(StreamDecoder.java:284)
+	at sun.nio.cs.StreamDecoder.implRead(StreamDecoder.java:326)
+	at sun.nio.cs.StreamDecoder.read(StreamDecoder.java:178)
+	at java.io.InputStreamReader.read(InputStreamReader.java:184)
+	at java.io.BufferedReader.fill(BufferedReader.java:161)
+	at java.io.BufferedReader.readLine(BufferedReader.java:324)
+	at java.io.BufferedReader.readLine(BufferedReader.java:389)
+	at simple.Client1Hop.chooseHops(Client1Hop.java:221)
+	at simple.Client1Hop.main(Client1Hop.java:251)
+Created socket for 35.162.176.50
+Successfully CREATED connection with 35.162.176.50:8080 Using Cipher Key 43
+Successfully CONNECTED  with www.mcgill.ca
+Website Connection time: 437 ms
+Wrote to file 'index.html'
+Total Response  time: 14411 ms
+^  ~/Github/onion-routing/simple git:(master) ✗ java simple/Client1Hop www.google.ca
+java.net.SocketException: Socket closed
+	at java.net.SocketInputStream.socketRead0(Native Method)
+	at java.net.SocketInputStream.socketRead(SocketInputStream.java:116)
+	at java.net.SocketInputStream.read(SocketInputStream.java:170)
+	at java.net.SocketInputStream.read(SocketInputStream.java:141)
+	at sun.nio.cs.StreamDecoder.readBytes(StreamDecoder.java:284)
+	at sun.nio.cs.StreamDecoder.implRead(StreamDecoder.java:326)
+	at sun.nio.cs.StreamDecoder.read(StreamDecoder.java:178)
+	at java.io.InputStreamReader.read(InputStreamReader.java:184)
+	at java.io.BufferedReader.fill(BufferedReader.java:161)
+	at java.io.BufferedReader.readLine(BufferedReader.java:324)
+	at java.io.BufferedReader.readLine(BufferedReader.java:389)
+	at simple.Client1Hop.chooseHops(Client1Hop.java:221)
+	at simple.Client1Hop.main(Client1Hop.java:251)
+Created socket for 35.162.176.50
+Successfully CREATED connection with 35.162.176.50:8080 Using Cipher Key 13
+Successfully CONNECTED  with www.google.ca
+Website Connection time: 339 ms
+Wrote to file 'index.html'
+Total Response  time: 8552 ms
+^  ~/Github/onion-routing/simple git:(master) ✗ javac simple/Client3hops.java
+^  ~/Github/onion-routing/simple git:(master) ✗ java simple.Client3hops www.google.ca
+Time taken to connect to directory and choose hops:215 ms
+Created socket for 35.162.165.63
+Successfully CREATED connection with 35.162.165.63:8080 Using Cipher Key 49
+Successfully EXTENDED connection with 35.161.60.16:8080 Using Cipher Key 32
+Successfully EXTENDED connection with 35.162.176.50:8080 Using Cipher Key 8
+Successfully CONNECTED  with www.google.ca
+Website Connection time: 541 ms
+^C%                                                                                                                                           ^  ~/Github/onion-routing/simple git:(master) ✗ java simple.Client3hops www.google.ca
+Time taken to connect to directory and choose hops:181 ms
+Created socket for 35.162.165.63
+Successfully CREATED connection with 35.162.165.63:8080 Using Cipher Key 47
+Successfully EXTENDED connection with 35.161.60.16:8080 Using Cipher Key 11
+Successfully EXTENDED connection with 35.162.176.50:8080 Using Cipher Key 13
+Successfully CONNECTED  with www.google.ca
+Website Connection time: 451 ms
+^C%                                                                                                                                           ^  ~/Github/onion-routing/simple git:(master) ✗ java simple.Client3hops www.google.ca
+Time taken to connect to directory and choose hops:187 ms
+Created socket for 35.162.165.63
+Successfully CREATED connection with 35.162.165.63:8080 Using Cipher Key 22
+Successfully EXTENDED connection with 35.161.60.16:8080 Using Cipher Key 10
+Successfully EXTENDED connection with 35.162.176.50:8080 Using Cipher Key 20
+Successfully CONNECTED  with www.google.ca
+Website Connection time: 471 ms
+Wrote to file 'index.html'
+Total Response  time: 8818 ms
+^  ~/Github/onion-routing/simple git:(master) ✗ java simple.Client3hops www.google.com
+Time taken to connect to directory and choose hops:185 ms
+Created socket for 35.162.165.63
+IOException:  java.net.SocketException: Connection reset
+^  ~/Github/onion-routing/simple git:(master) ✗ java simple.Client3hops www.google.com
+Time taken to connect to directory and choose hops:192 ms
+Created socket for 35.162.165.63
+Successfully CREATED connection with 35.162.165.63:8080 Using Cipher Key 11
+Successfully EXTENDED connection with 35.161.60.16:8080 Using Cipher Key 22
+Successfully EXTENDED connection with 35.162.176.50:8080 Using Cipher Key 3
+Successfully CONNECTED  with www.google.com
+Website Connection time: 438 ms
+Wrote to file 'index.html'
+Total Response  time: 9313 ms
+^  ~/Github/onion-routing/simple git:(master) ✗ java simple.Client3hops www.mcgill.ca
+Time taken to connect to directory and choose hops:264 ms
+Created socket for 35.162.165.63
+IOException:  java.net.SocketException: Connection reset
+^  ~/Github/onion-routing/simple git:(master) ✗ java simple.Client3hops www.mcgill.ca
+Time taken to connect to directory and choose hops:178 ms
+Created socket for 35.162.165.63
+Successfully CREATED connection with 35.162.165.63:8080 Using Cipher Key 41
+Successfully EXTENDED connection with 35.161.60.16:8080 Using Cipher Key 42
+Successfully EXTENDED connection with 35.162.176.50:8080 Using Cipher Key 1
+Successfully CONNECTED  with www.mcgill.ca
+Website Connection time: 566 ms
+Wrote to file 'index.html'
+Total Response  time: 8993 ms
+^  ~/Github/onion-routing/simple git:(master) ✗ java simple.Client3hops www.facebook.com
+Time taken to connect to directory and choose hops:191 ms
+Created socket for 35.162.165.63
+Successfully CREATED connection with 35.162.165.63:8080 Using Cipher Key 33
+Successfully EXTENDED connection with 35.161.60.16:8080 Using Cipher Key 38
+Successfully EXTENDED connection with 35.162.176.50:8080 Using Cipher Key 40
+Successfully CONNECTED  with www.facebook.com
+Website Connection time: 472 ms
+Wrote to file 'index.html'
+Total Response  time: 930 ms
+^  ~/Github/onion-routing/simple git:(master) ✗ java simple.Client3hops www.youtube.com
+Time taken to connect to directory and choose hops:197 ms
+Created socket for 35.162.165.63
+Successfully CREATED connection with 35.162.165.63:8080 Using Cipher Key 25
+Successfully EXTENDED connection with 35.161.60.16:8080 Using Cipher Key 18
+Successfully EXTENDED connection with 35.162.176.50:8080 Using Cipher Key 30
+Successfully CONNECTED  with www.youtube.com
+Website Connection time: 444 ms
+Wrote to file 'index.html'
+Total Response  time: 802 ms
+^  ~/Github/onion-routing/simple git:(master) ✗ java simple.Client3hops www.yahoo.com
+Time taken to connect to directory and choose hops:183 ms
+Created socket for 35.162.165.63
+Successfully CREATED connection with 35.162.165.63:8080 Using Cipher Key 4
+Successfully EXTENDED connection with 35.161.60.16:8080 Using Cipher Key 50
+Successfully EXTENDED connection with 35.162.176.50:8080 Using Cipher Key 27
+Successfully CONNECTED  with www.yahoo.com
+Website Connection time: 455 ms
+Wrote to file 'index.html'
+Total Response  time: 851 ms
+^  ~/Github/onion-routing/simple git:(master) ✗ java simple.Client3hops www.amazon.com
+Time taken to connect to directory and choose hops:190 ms
+Created socket for 35.162.165.63
+^C%                                                                                                                                           ^  ~/Github/onion-routing/simple git:(master) ✗ java simple.Client3hops www.amazon.com
+Time taken to connect to directory and choose hops:284 ms
+Created socket for 35.162.165.63
+Successfully CREATED connection with 35.162.165.63:8080 Using Cipher Key 11
+Successfully EXTENDED connection with 35.161.60.16:8080 Using Cipher Key 2
+Successfully EXTENDED connection with 35.162.176.50:8080 Using Cipher Key 44
+Successfully CONNECTED  with www.amazon.com
+Website Connection time: 566 ms
+Wrote to file 'index.html'
+Total Response  time: 904 ms
+^  ~/Github/onion-routing/simple git:(master) ✗ java simple.Client1Hop www.amazon.com
+java.net.SocketException: Socket closed
+	at java.net.SocketInputStream.socketRead0(Native Method)
+	at java.net.SocketInputStream.socketRead(SocketInputStream.java:116)
+	at java.net.SocketInputStream.read(SocketInputStream.java:170)
+	at java.net.SocketInputStream.read(SocketInputStream.java:141)
+	at sun.nio.cs.StreamDecoder.readBytes(StreamDecoder.java:284)
+	at sun.nio.cs.StreamDecoder.implRead(StreamDecoder.java:326)
+	at sun.nio.cs.StreamDecoder.read(StreamDecoder.java:178)
+	at java.io.InputStreamReader.read(InputStreamReader.java:184)
+	at java.io.BufferedReader.fill(BufferedReader.java:161)
+	at java.io.BufferedReader.readLine(BufferedReader.java:324)
+	at java.io.BufferedReader.readLine(BufferedReader.java:389)
+	at simple.Client1Hop.chooseHops(Client1Hop.java:221)
+	at simple.Client1Hop.main(Client1Hop.java:251)
+Created socket for 35.162.176.50
+Successfully CREATED connection with 35.162.176.50:8080 Using Cipher Key 41
+Successfully CONNECTED  with www.amazon.com
+Website Connection time: 406 ms
+Wrote to file 'index.html'
+Total Response  time: 683 ms
+^  ~/Github/onion-routing/simple git:(master) ✗ javac simple/Client3hops.java
+^  ~/Github/onion-routing/simple git:(master) ✗ javac simple/Client1Hop.java
+^  ~/Github/onion-routing/simple git:(master) ✗ java simple.Client1Hop www.amazon.com
+java.net.SocketException: Socket closed
+	at java.net.SocketInputStream.socketRead0(Native Method)
+	at java.net.SocketInputStream.socketRead(SocketInputStream.java:116)
+	at java.net.SocketInputStream.read(SocketInputStream.java:170)
+	at java.net.SocketInputStream.read(SocketInputStream.java:141)
+	at sun.nio.cs.StreamDecoder.readBytes(StreamDecoder.java:284)
+	at sun.nio.cs.StreamDecoder.implRead(StreamDecoder.java:326)
+	at sun.nio.cs.StreamDecoder.read(StreamDecoder.java:178)
+	at java.io.InputStreamReader.read(InputStreamReader.java:184)
+	at java.io.BufferedReader.fill(BufferedReader.java:161)
+	at java.io.BufferedReader.readLine(BufferedReader.java:324)
+	at java.io.BufferedReader.readLine(BufferedReader.java:389)
+	at simple.Client1Hop.chooseHops(Client1Hop.java:221)
+	at simple.Client1Hop.main(Client1Hop.java:251)
+Created socket for 35.162.176.50
+Successfully CREATED connection with 35.162.176.50:8080 Using Cipher Key 40
+Successfully CONNECTED  with www.amazon.com
+Website Connection time: 439 ms
+Wrote to file 'index.html'
+Total Response  time: 773 ms
+^  ~/Github/onion-routing/simple git:(master) ✗ java simple.Client1Hop www.amazon.com
+java.net.SocketException: Socket closed
+	at java.net.SocketInputStream.socketRead0(Native Method)
+	at java.net.SocketInputStream.socketRead(SocketInputStream.java:116)
+	at java.net.SocketInputStream.read(SocketInputStream.java:170)
+	at java.net.SocketInputStream.read(SocketInputStream.java:141)
+	at sun.nio.cs.StreamDecoder.readBytes(StreamDecoder.java:284)
+	at sun.nio.cs.StreamDecoder.implRead(StreamDecoder.java:326)
+	at sun.nio.cs.StreamDecoder.read(StreamDecoder.java:178)
+	at java.io.InputStreamReader.read(InputStreamReader.java:184)
+	at java.io.BufferedReader.fill(BufferedReader.java:161)
+	at java.io.BufferedReader.readLine(BufferedReader.java:324)
+	at java.io.BufferedReader.readLine(BufferedReader.java:389)
+	at simple.Client1Hop.chooseHops(Client1Hop.java:221)
+	at simple.Client1Hop.main(Client1Hop.java:251)
+Created socket for 35.162.176.50
+Successfully CREATED connection with 35.162.176.50:8080 Using Cipher Key 10
+Successfully CONNECTED  with www.amazon.com
+Website Connection time: 436 ms
+Wrote to file 'index.html'
+Total Response  time: 710 ms
+^  ~/Github/onion-routing/simple git:(master) ✗ java simple.Client1Hop www.google.com
+java.net.SocketException: Socket closed
+	at java.net.SocketInputStream.socketRead0(Native Method)
+	at java.net.SocketInputStream.socketRead(SocketInputStream.java:116)
+	at java.net.SocketInputStream.read(SocketInputStream.java:170)
+	at java.net.SocketInputStream.read(SocketInputStream.java:141)
+	at sun.nio.cs.StreamDecoder.readBytes(StreamDecoder.java:284)
+	at sun.nio.cs.StreamDecoder.implRead(StreamDecoder.java:326)
+	at sun.nio.cs.StreamDecoder.read(StreamDecoder.java:178)
+	at java.io.InputStreamReader.read(InputStreamReader.java:184)
+	at java.io.BufferedReader.fill(BufferedReader.java:161)
+	at java.io.BufferedReader.readLine(BufferedReader.java:324)
+	at java.io.BufferedReader.readLine(BufferedReader.java:389)
+	at simple.Client1Hop.chooseHops(Client1Hop.java:221)
+	at simple.Client1Hop.main(Client1Hop.java:251)
+Created socket for 35.162.176.50
+Successfully CREATED connection with 35.162.176.50:8080 Using Cipher Key 19
+Successfully CONNECTED  with www.google.com
+Website Connection time: 260 ms
+Wrote to file 'index.html'
+Total Response  time: 8037 ms
+^  ~/Github/onion-routing/simple git:(master) ✗ java simple.Client1Hop www.mcgill.com
+java.net.SocketException: Socket closed
+	at java.net.SocketInputStream.socketRead0(Native Method)
+	at java.net.SocketInputStream.socketRead(SocketInputStream.java:116)
+	at java.net.SocketInputStream.read(SocketInputStream.java:170)
+	at java.net.SocketInputStream.read(SocketInputStream.java:141)
+	at sun.nio.cs.StreamDecoder.readBytes(StreamDecoder.java:284)
+	at sun.nio.cs.StreamDecoder.implRead(StreamDecoder.java:326)
+	at sun.nio.cs.StreamDecoder.read(StreamDecoder.java:178)
+	at java.io.InputStreamReader.read(InputStreamReader.java:184)
+	at java.io.BufferedReader.fill(BufferedReader.java:161)
+	at java.io.BufferedReader.readLine(BufferedReader.java:324)
+	at java.io.BufferedReader.readLine(BufferedReader.java:389)
+	at simple.Client1Hop.chooseHops(Client1Hop.java:221)
+	at simple.Client1Hop.main(Client1Hop.java:251)
+Created socket for 35.162.176.50
+Successfully CREATED connection with 35.162.176.50:8080 Using Cipher Key 10
+IOException:  java.io.IOException: Incorrect message! Connected expected.
+^  ~/Github/onion-routing/simple git:(master) ✗ java simple.Client1Hop www.mcgill.com
+java.net.SocketException: Socket closed
+	at java.net.SocketInputStream.socketRead0(Native Method)
+	at java.net.SocketInputStream.socketRead(SocketInputStream.java:116)
+	at java.net.SocketInputStream.read(SocketInputStream.java:170)
+	at java.net.SocketInputStream.read(SocketInputStream.java:141)
+	at sun.nio.cs.StreamDecoder.readBytes(StreamDecoder.java:284)
+	at sun.nio.cs.StreamDecoder.implRead(StreamDecoder.java:326)
+	at sun.nio.cs.StreamDecoder.read(StreamDecoder.java:178)
+	at java.io.InputStreamReader.read(InputStreamReader.java:184)
+	at java.io.BufferedReader.fill(BufferedReader.java:161)
+	at java.io.BufferedReader.readLine(BufferedReader.java:324)
+	at java.io.BufferedReader.readLine(BufferedReader.java:389)
+	at simple.Client1Hop.chooseHops(Client1Hop.java:221)
+	at simple.Client1Hop.main(Client1Hop.java:251)
+Created socket for 35.162.176.50
+Successfully CREATED connection with 35.162.176.50:8080 Using Cipher Key 15
+^C%                                                                                                                                           ^  ~/Github/onion-routing/simple git:(master) ✗ java simple.Client1Hop www.mcgill.ca
+java.net.SocketException: Socket closed
+	at java.net.SocketInputStream.socketRead0(Native Method)
+	at java.net.SocketInputStream.socketRead(SocketInputStream.java:116)
+	at java.net.SocketInputStream.read(SocketInputStream.java:170)
+	at java.net.SocketInputStream.read(SocketInputStream.java:141)
+	at sun.nio.cs.StreamDecoder.readBytes(StreamDecoder.java:284)
+	at sun.nio.cs.StreamDecoder.implRead(StreamDecoder.java:326)
+	at sun.nio.cs.StreamDecoder.read(StreamDecoder.java:178)
+	at java.io.InputStreamReader.read(InputStreamReader.java:184)
+	at java.io.BufferedReader.fill(BufferedReader.java:161)
+	at java.io.BufferedReader.readLine(BufferedReader.java:324)
+	at java.io.BufferedReader.readLine(BufferedReader.java:389)
+	at simple.Client1Hop.chooseHops(Client1Hop.java:221)
+	at simple.Client1Hop.main(Client1Hop.java:251)
+Created socket for 35.162.176.50
+Successfully CREATED connection with 35.162.176.50:8080 Using Cipher Key 21
+Successfully CONNECTED  with www.mcgill.ca
+Website Connection time: 539 ms
+Wrote to file 'index.html'
+Total Response  time: 8274 ms
+^  ~/Github/onion-routing/simple git:(master) ✗ java simple.Client1Hop www.youtube.com
+java.net.SocketException: Socket closed
+	at java.net.SocketInputStream.socketRead0(Native Method)
+	at java.net.SocketInputStream.socketRead(SocketInputStream.java:116)
+	at java.net.SocketInputStream.read(SocketInputStream.java:170)
+	at java.net.SocketInputStream.read(SocketInputStream.java:141)
+	at sun.nio.cs.StreamDecoder.readBytes(StreamDecoder.java:284)
+	at sun.nio.cs.StreamDecoder.implRead(StreamDecoder.java:326)
+	at sun.nio.cs.StreamDecoder.read(StreamDecoder.java:178)
+	at java.io.InputStreamReader.read(InputStreamReader.java:184)
+	at java.io.BufferedReader.fill(BufferedReader.java:161)
+	at java.io.BufferedReader.readLine(BufferedReader.java:324)
+	at java.io.BufferedReader.readLine(BufferedReader.java:389)
+	at simple.Client1Hop.chooseHops(Client1Hop.java:221)
+	at simple.Client1Hop.main(Client1Hop.java:251)
+Created socket for 35.162.176.50
+Successfully CREATED connection with 35.162.176.50:8080 Using Cipher Key 28
+Successfully CONNECTED  with www.youtube.com
+Website Connection time: 267 ms
+Wrote to file 'index.html'
+Total Response  time: 604 ms
+^  ~/Github/onion-routing/simple git:(master) ✗ java simple.Client1Hop www.yahoo.com
+java.net.SocketException: Socket closed
+	at java.net.SocketInputStream.socketRead0(Native Method)
+	at java.net.SocketInputStream.socketRead(SocketInputStream.java:116)
+	at java.net.SocketInputStream.read(SocketInputStream.java:170)
+	at java.net.SocketInputStream.read(SocketInputStream.java:141)
+	at sun.nio.cs.StreamDecoder.readBytes(StreamDecoder.java:284)
+	at sun.nio.cs.StreamDecoder.implRead(StreamDecoder.java:326)
+	at sun.nio.cs.StreamDecoder.read(StreamDecoder.java:178)
+	at java.io.InputStreamReader.read(InputStreamReader.java:184)
+	at java.io.BufferedReader.fill(BufferedReader.java:161)
+	at java.io.BufferedReader.readLine(BufferedReader.java:324)
+	at java.io.BufferedReader.readLine(BufferedReader.java:389)
+	at simple.Client1Hop.chooseHops(Client1Hop.java:221)
+	at simple.Client1Hop.main(Client1Hop.java:251)
+Created socket for 35.162.176.50
+Successfully CREATED connection with 35.162.176.50:8080 Using Cipher Key 40
+Successfully CONNECTED  with www.yahoo.com
+Website Connection time: 433 ms
+Wrote to file 'index.html'
+Total Response  time: 762 ms
+^  ~/Github/onion-routing/simple git:(master) ✗ java simple.Client1Hop www.facebook.com
+java.net.SocketException: Socket closed
+	at java.net.SocketInputStream.socketRead0(Native Method)
+	at java.net.SocketInputStream.socketRead(SocketInputStream.java:116)
+	at java.net.SocketInputStream.read(SocketInputStream.java:170)
+	at java.net.SocketInputStream.read(SocketInputStream.java:141)
+	at sun.nio.cs.StreamDecoder.readBytes(StreamDecoder.java:284)
+	at sun.nio.cs.StreamDecoder.implRead(StreamDecoder.java:326)
+	at sun.nio.cs.StreamDecoder.read(StreamDecoder.java:178)
+	at java.io.InputStreamReader.read(InputStreamReader.java:184)
+	at java.io.BufferedReader.fill(BufferedReader.java:161)
+	at java.io.BufferedReader.readLine(BufferedReader.java:324)
+	at java.io.BufferedReader.readLine(BufferedReader.java:389)
+	at simple.Client1Hop.chooseHops(Client1Hop.java:221)
+	at simple.Client1Hop.main(Client1Hop.java:251)
+Created socket for 35.162.176.50
+Successfully CREATED connection with 35.162.176.50:8080 Using Cipher Key 5
+Successfully CONNECTED  with www.facebook.com
+Website Connection time: 306 ms
+Wrote to file 'index.html'
+Total Response  time: 638 ms
+^  ~/Github/onion-routing/simple git:(master) ✗ wget www.google.com
+--2016-12-05 15:56:22--  http://www.google.com/
+Resolving www.google.com... 172.217.3.132, 2607:f8b0:400b:80a::2004
+Connecting to www.google.com|172.217.3.132|:80... connected.
+HTTP request sent, awaiting response... 302 Found
+Location: http://www.google.ca/?gfe_rd=cr&ei=dtRFWK3bKuOM8QebtbrQDg [following]
+--2016-12-05 15:56:22--  http://www.google.ca/?gfe_rd=cr&ei=dtRFWK3bKuOM8QebtbrQDg
+Resolving www.google.ca... 172.217.3.131, 2607:f8b0:400b:80a::2003
+Connecting to www.google.ca|172.217.3.131|:80... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: unspecified [text/html]
+Saving to: ‘index.html.3’
+
+index.html.3                            [ <=>                                                              ]  10.55K  --.-KB/s    in 0s
+
+2016-12-05 15:56:22 (40.1 MB/s) - ‘index.html.3’ saved [10808]
+
+^  ~/Github/onion-routing/simple git:(master) ✗ wget www.google.ca
+--2016-12-05 15:56:25--  http://www.google.ca/
+Resolving www.google.ca... 172.217.3.131, 2607:f8b0:400b:80a::2003
+Connecting to www.google.ca|172.217.3.131|:80... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: unspecified [text/html]
+Saving to: ‘index.html.4’
+
+index.html.4                            [ <=>                                                              ]  10.49K  --.-KB/s    in 0.008s
+
+2016-12-05 15:56:26 (1.32 MB/s) - ‘index.html.4’ saved [10746]
+
+^  ~/Github/onion-routing/simple git:(master) ✗ wget www.google.com
+--2016-12-05 15:56:41--  http://www.google.com/
+Resolving www.google.com... 172.217.3.132, 2607:f8b0:400b:80a::2004
+Connecting to www.google.com|172.217.3.132|:80... connected.
+HTTP request sent, awaiting response... 302 Found
+Location: http://www.google.ca/?gfe_rd=cr&ei=idRFWOOMI-iM8QeGxJuwAw [following]
+--2016-12-05 15:56:41--  http://www.google.ca/?gfe_rd=cr&ei=idRFWOOMI-iM8QeGxJuwAw
+Resolving www.google.ca... 172.217.3.131, 2607:f8b0:400b:80a::2003
+Connecting to www.google.ca|172.217.3.131|:80... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: unspecified [text/html]
+Saving to: ‘index.html.5’
+
+index.html.5                            [ <=>                                                              ]  10.55K  --.-KB/s    in 0s
+
+2016-12-05 15:56:41 (38.6 MB/s) - ‘index.html.5’ saved [10800]
+
+^  ~/Github/onion-routing/simple git:(master) ✗ time !!
+^  ~/Github/onion-routing/simple git:(master) ✗ time wget www.google.com
+--2016-12-05 15:56:50--  http://www.google.com/
+Resolving www.google.com... 172.217.3.132, 2607:f8b0:400b:80a::2004
+Connecting to www.google.com|172.217.3.132|:80... connected.
+HTTP request sent, awaiting response... 302 Found
+Location: http://www.google.ca/?gfe_rd=cr&ei=k9RFWPSmAueM8Qe1srOoDA [following]
+--2016-12-05 15:56:51--  http://www.google.ca/?gfe_rd=cr&ei=k9RFWPSmAueM8Qe1srOoDA
+Resolving www.google.ca... 172.217.3.131, 2607:f8b0:400b:80a::2003
+Connecting to www.google.ca|172.217.3.131|:80... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: unspecified [text/html]
+Saving to: ‘index.html.6’
+
+index.html.6                            [ <=>                                                              ]  10.62K  --.-KB/s    in 0s
+
+2016-12-05 15:56:51 (58.3 MB/s) - ‘index.html.6’ saved [10878]
+
+wget www.google.com  0.00s user 0.00s system 2% cpu 0.247 total
+^  ~/Github/onion-routing/simple git:(master) ✗ bash
+[ykhan@Yusairas-MBP: ~/Github/onion-routing/simple]$ wget www.google.com
+--2016-12-05 15:57:08--  http://www.google.com/
+Resolving www.google.com... 172.217.3.132, 2607:f8b0:400b:80a::2004
+Connecting to www.google.com|172.217.3.132|:80... connected.
+HTTP request sent, awaiting response... 302 Found
+Location: http://www.google.ca/?gfe_rd=cr&ei=pNRFWNOkI-GM8QeyoJbwDw [following]
+--2016-12-05 15:57:08--  http://www.google.ca/?gfe_rd=cr&ei=pNRFWNOkI-GM8QeyoJbwDw
+Resolving www.google.ca... 172.217.3.131, 2607:f8b0:400b:80a::2003
+Connecting to www.google.ca|172.217.3.131|:80... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: unspecified [text/html]
+Saving to: ‘index.html.7’
+
+index.html.7                            [ <=>                                                              ]  10.53K  --.-KB/s    in 0.002s
+
+2016-12-05 15:57:08 (4.48 MB/s) - ‘index.html.7’ saved [10785]
+
+[ykhan@Yusairas-MBP: ~/Github/onion-routing/simple]$ time !!
+time wget www.google.com
+--2016-12-05 15:57:13--  http://www.google.com/
+Resolving www.google.com... 172.217.3.132, 2607:f8b0:400b:80a::2004
+Connecting to www.google.com|172.217.3.132|:80... connected.
+HTTP request sent, awaiting response... 302 Found
+Location: http://www.google.ca/?gfe_rd=cr&ei=qdRFWOTXG-OM8QebtbrQDg [following]
+--2016-12-05 15:57:13--  http://www.google.ca/?gfe_rd=cr&ei=qdRFWOTXG-OM8QebtbrQDg
+Resolving www.google.ca... 172.217.3.131, 2607:f8b0:400b:80a::2003
+Connecting to www.google.ca|172.217.3.131|:80... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: unspecified [text/html]
+Saving to: ‘index.html.8’
+
+index.html.8                            [ <=>                                                              ]  10.53K  --.-KB/s    in 0.001s
+
+2016-12-05 15:57:13 (8.67 MB/s) - ‘index.html.8’ saved [10784]
+
+
+real	0m0.191s
+user	0m0.003s
+sys	0m0.007s
+[ykhan@Yusairas-MBP: ~/Github/onion-routing/simple]$ ping www.google.com 5
+usage: ping [-AaDdfnoQqRrv] [-c count] [-G sweepmaxsize]
+            [-g sweepminsize] [-h sweepincrsize] [-i wait]
+            [-l preload] [-M mask | time] [-m ttl] [-p pattern]
+            [-S src_addr] [-s packetsize] [-t timeout][-W waittime]
+            [-z tos] host
+       ping [-AaDdfLnoQqRrv] [-c count] [-I iface] [-i wait]
+            [-l preload] [-M mask | time] [-m ttl] [-p pattern] [-S src_addr]
+            [-s packetsize] [-T ttl] [-t timeout] [-W waittime]
+            [-z tos] mcast-group
+Apple specific options (to be specified before mcast-group or host like all options)
+            -b boundif           # bind the socket to the interface
+            -k traffic_class     # set traffic class socket option
+            -K net_service_type  # set traffic class socket options
+            -apple-connect       # call connect(2) in the socket
+            -apple-time          # display current time
+[ykhan@Yusairas-MBP: ~/Github/onion-routing/simple]$ ping www.google.com -c 5
+PING www.google.com (172.217.3.132): 56 data bytes
+64 bytes from 172.217.3.132: icmp_seq=0 ttl=55 time=19.220 ms
+64 bytes from 172.217.3.132: icmp_seq=1 ttl=55 time=25.102 ms
+64 bytes from 172.217.3.132: icmp_seq=2 ttl=55 time=23.492 ms
+64 bytes from 172.217.3.132: icmp_seq=3 ttl=55 time=19.586 ms
+64 bytes from 172.217.3.132: icmp_seq=4 ttl=55 time=18.724 ms
+
+--- www.google.com ping statistics ---
+5 packets transmitted, 5 packets received, 0.0% packet loss
+round-trip min/avg/max/stddev = 18.724/21.225/25.102/2.574 ms
+[ykhan@Yusairas-MBP: ~/Github/onion-routing/simple]$ ping www.google.com -c 1
+PING www.google.com (172.217.3.132): 56 data bytes
+64 bytes from 172.217.3.132: icmp_seq=0 ttl=55 time=23.747 ms
+
+--- www.google.com ping statistics ---
+1 packets transmitted, 1 packets received, 0.0% packet loss
+round-trip min/avg/max/stddev = 23.747/23.747/23.747/0.000 ms
+[ykhan@Yusairas-MBP: ~/Github/onion-routing/simple]$ ping www.amazon -c 1
+ping: cannot resolve www.amazon: Unknown host
+[ykhan@Yusairas-MBP: ~/Github/onion-routing/simple]$ ping www.amazon.com -c 1
+PING opf-www.amazon.com (54.239.25.200): 56 data bytes
+64 bytes from 54.239.25.200: icmp_seq=0 ttl=233 time=47.332 ms
+
+--- opf-www.amazon.com ping statistics ---
+1 packets transmitted, 1 packets received, 0.0% packet loss
+round-trip min/avg/max/stddev = 47.332/47.332/47.332/0.000 ms
+[ykhan@Yusairas-MBP: ~/Github/onion-routing/simple]$ ping www.yahoo.com -c 1
+PING fd-fp3.wg1.b.yahoo.com (98.139.183.24): 56 data bytes
+64 bytes from 98.139.183.24: icmp_seq=0 ttl=51 time=20.595 ms
+
+--- fd-fp3.wg1.b.yahoo.com ping statistics ---
+1 packets transmitted, 1 packets received, 0.0% packet loss
+round-trip min/avg/max/stddev = 20.595/20.595/20.595/0.000 ms
+[ykhan@Yusairas-MBP: ~/Github/onion-routing/simple]$ ping www.youtube.com -c 1
+PING youtube-ui.l.google.com (172.217.0.174): 56 data bytes
+64 bytes from 172.217.0.174: icmp_seq=0 ttl=55 time=17.446 ms
+
+--- youtube-ui.l.google.com ping statistics ---
+1 packets transmitted, 1 packets received, 0.0% packet loss
+round-trip min/avg/max/stddev = 17.446/17.446/17.446/0.000 ms
+[ykhan@Yusairas-MBP: ~/Github/onion-routing/simple]$ ping www.facebook.com -c 1
+PING star-mini.c10r.facebook.com (31.13.80.36): 56 data bytes
+64 bytes from 31.13.80.36: icmp_seq=0 ttl=87 time=19.516 ms
+
+--- star-mini.c10r.facebook.com ping statistics ---
+1 packets transmitted, 1 packets received, 0.0% packet loss
+round-trip min/avg/max/stddev = 19.516/19.516/19.516/0.000 ms
+[ykhan@Yusairas-MBP: ~/Github/onion-routing/simple]$ wget www.amazon.com
+--2016-12-05 15:59:50--  http://www.amazon.com/
+Resolving www.amazon.com... 54.239.25.208
+Connecting to www.amazon.com|54.239.25.208|:80... connected.
+HTTP request sent, awaiting response... 301 Moved Permanently
+Location: https://www.amazon.com/ [following]
+--2016-12-05 15:59:50--  https://www.amazon.com/
+Connecting to www.amazon.com|54.239.25.208|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: unspecified [text/html]
+Saving to: ‘index.html.9’
+
+index.html.9                            [ <=>                                                              ] 178.38K   956KB/s    in 0.2s
+
+2016-12-05 15:59:51 (956 KB/s) - ‘index.html.9’ saved [182663]
+
+[ykhan@Yusairas-MBP: ~/Github/onion-routing/simple]$ ping www.mcgill.ca -c 1
+PING www.mcgill.ca (132.216.177.160): 56 data bytes
+64 bytes from 132.216.177.160: icmp_seq=0 ttl=243 time=42.802 ms
+
+--- www.mcgill.ca ping statistics ---
+1 packets transmitted, 1 packets received, 0.0% packet loss
+round-trip min/avg/max/stddev = 42.802/42.802/42.802/0.000 ms
+[ykhan@Yusairas-MBP: ~/Github/onion-routing/simple]$ time wget www.amazon.com
+URL transformed to HTTPS due to an HSTS policy
+--2016-12-05 16:00:17--  https://www.amazon.com/
+Resolving www.amazon.com... 54.239.25.208
+Connecting to www.amazon.com|54.239.25.208|:443... connected.
+HTTP request sent, awaiting response... 503 Service Unavailable
+2016-12-05 16:00:17 ERROR 503: Service Unavailable.
+
+
+real	0m0.224s
+user	0m0.015s
+sys	0m0.005s
+[ykhan@Yusairas-MBP: ~/Github/onion-routing/simple]$ time wget www.youtube.com
+--2016-12-05 16:00:29--  http://www.youtube.com/
+Resolving www.youtube.com... 172.217.0.174, 2607:f8b0:400b:807::200e
+Connecting to www.youtube.com|172.217.0.174|:80... connected.
+HTTP request sent, awaiting response... 301 Moved Permanently
+Location: https://www.youtube.com/ [following]
+--2016-12-05 16:00:29--  https://www.youtube.com/
+Connecting to www.youtube.com|172.217.0.174|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: unspecified [text/html]
+Saving to: ‘index.html.10’
+
+index.html.10                           [     <=>                                                          ] 504.23K   271KB/s    in 1.9s
+
+2016-12-05 16:00:31 (271 KB/s) - ‘index.html.10’ saved [516329]
+
+
+real	0m2.147s
+user	0m0.024s
+sys	0m0.029s
+[ykhan@Yusairas-MBP: ~/Github/onion-routing/simple]$ time wget www.yahoo.com
+--2016-12-05 16:00:37--  http://www.yahoo.com/
+Resolving www.yahoo.com... 98.139.183.24, 98.139.180.149, 2001:4998:58:c02::a9
+Connecting to www.yahoo.com|98.139.183.24|:80... connected.
+HTTP request sent, awaiting response... 301 Redirect
+Location: https://www.yahoo.com/ [following]
+--2016-12-05 16:00:37--  https://www.yahoo.com/
+Connecting to www.yahoo.com|98.139.183.24|:443... connected.
+HTTP request sent, awaiting response... 302 Found
+Location: https://ca.yahoo.com/?p=us [following]
+--2016-12-05 16:00:37--  https://ca.yahoo.com/?p=us
+Resolving ca.yahoo.com... 98.139.183.24, 98.139.180.149, 2001:4998:58:c02::a9
+Connecting to ca.yahoo.com|98.139.183.24|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: unspecified [text/html]
+Saving to: ‘index.html.11’
+
+index.html.11                           [     <=>                                                          ] 397.34K   445KB/s    in 0.9s
+
+2016-12-05 16:00:39 (445 KB/s) - ‘index.html.11’ saved [406872]
+
+
+real	0m2.041s
+user	0m0.022s
+sys	0m0.021s
+[ykhan@Yusairas-MBP: ~/Github/onion-routing/simple]$ time wget www.amazon.com
+URL transformed to HTTPS due to an HSTS policy
+--2016-12-05 16:01:34--  https://www.amazon.com/
+Resolving www.amazon.com... 54.239.26.128
+Connecting to www.amazon.com|54.239.26.128|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: unspecified [text/html]
+Saving to: ‘index.html.12’
+
+index.html.12                           [ <=>                                                              ] 178.07K  1024KB/s    in 0.2s
+
+2016-12-05 16:01:34 (1024 KB/s) - ‘index.html.12’ saved [182343]
+
+
+real	0m0.571s
+user	0m0.018s
+sys	0m0.011s
+[ykhan@Yusairas-MBP: ~/Github/onion-routing/simple]$ time wget www.facebook.com
+--2016-12-05 16:01:55--  http://www.facebook.com/
+Resolving www.facebook.com... 31.13.80.36, 2a03:2880:f10e:83:face:b00c::25de
+Connecting to www.facebook.com|31.13.80.36|:80... connected.
+HTTP request sent, awaiting response... 302 Found
+Location: https://www.facebook.com/ [following]
+--2016-12-05 16:01:55--  https://www.facebook.com/
+Connecting to www.facebook.com|31.13.80.36|:443... connected.
+HTTP request sent, awaiting response... 302 Found
+Location: https://www.facebook.com/unsupportedbrowser [following]
+--2016-12-05 16:01:55--  https://www.facebook.com/unsupportedbrowser
+Reusing existing connection to www.facebook.com:443.
+HTTP request sent, awaiting response... 200 OK
+Length: unspecified [text/html]
+Saving to: ‘index.html.13’
+
+index.html.13                           [ <=>                                                              ]  75.51K  --.-KB/s    in 0.08s
+
+2016-12-05 16:01:55 (983 KB/s) - ‘index.html.13’ saved [77324]
+
+
+real	0m0.399s
+user	0m0.017s
+sys	0m0.010s
+[ykhan@Yusairas-MBP: ~/Github/onion-routing/simple]$ time wget www.mcgill.ca
+--2016-12-05 16:02:02--  http://www.mcgill.ca/
+Resolving www.mcgill.ca... 132.216.177.160
+Connecting to www.mcgill.ca|132.216.177.160|:80... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: unspecified [text/html]
+Saving to: ‘index.html.14’
+
+index.html.14                           [ <=>                                                              ]  41.74K  --.-KB/s    in 0.05s
+
+2016-12-05 16:02:02 (868 KB/s) - ‘index.html.14’ saved [42738]
+
+
+real	0m0.132s
+user	0m0.003s
+sys	0m0.006s
+^  ~/Github/onion-routing/simple git:(master) ✗ java simple.Client1Hop www.google.com
+java.net.SocketException: Socket closed
+	at java.net.SocketInputStream.socketRead0(Native Method)
+	at java.net.SocketInputStream.socketRead(SocketInputStream.java:116)
+	at java.net.SocketInputStream.read(SocketInputStream.java:170)
+	at java.net.SocketInputStream.read(SocketInputStream.java:141)
+	at sun.nio.cs.StreamDecoder.readBytes(StreamDecoder.java:284)
+	at sun.nio.cs.StreamDecoder.implRead(StreamDecoder.java:326)
+	at sun.nio.cs.StreamDecoder.read(StreamDecoder.java:178)
+	at java.io.InputStreamReader.read(InputStreamReader.java:184)
+	at java.io.BufferedReader.fill(BufferedReader.java:161)
+	at java.io.BufferedReader.readLine(BufferedReader.java:324)
+	at java.io.BufferedReader.readLine(BufferedReader.java:389)
+	at simple.Client1Hop.chooseHops(Client1Hop.java:221)
+	at simple.Client1Hop.main(Client1Hop.java:251)
+Created socket for 35.162.176.50
+Successfully CREATED connection with 35.162.176.50:8080 Using Cipher Key 41
+Successfully CONNECTED  with www.google.com
+Website Connection time: 286 ms
+Wrote to file 'index.html'
+Total Response  time: 8422 ms

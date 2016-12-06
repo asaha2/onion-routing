@@ -34,10 +34,11 @@ public class DirectoryServer {
 	
 	public DirectoryServer() {
 		proxies = new TreeMap<String, String>();
-		addServer("Proxy0", "35.162.165.63", "proxy");
-		addServer("Proxy1", "35.161.60.16", "proxy");
-		addServer("Proxy2", "35.162.181.227", "proxy");
-		addServer("Proxy3", "35.162.176.50", "proxy");
+		addServer("Proxy1", "35.162.165.63", "proxy");
+		addServer("Proxy2", "35.161.60.16", "proxy");
+		addServer("Proxy4", "35.162.176.50", "proxy");
+		addServer("Proxy3", "35.162.181.227", "proxy");
+
 		
 		destinationServers = new HashMap<String, String>();
 		addServer("DestinationServer1", "35.160.73.178", "destination");

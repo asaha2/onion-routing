@@ -266,21 +266,21 @@ public class Proxy extends Thread {
 //							System.out.println(new String(m.data));
 							relayMessage(m, line);
 							
-							if ((inputBackward.available()==0) && (inputForward.available()==0)){
+						/*	if ((inputBackward.available()==0) && (inputForward.available()==0)){
 								outputBackward.close();
 								outputForward.close();
 								System.out.println("Finished relaying");
 								break;
 
-							}
+							}*/
 						} catch (IOException e) {
+							outputBackward.close();
+							outputForward.close();
 							System.out.println("Finished relaying");
 							break;
 						}
 					}
-				}
-
-				if (m.cmd == Message.Cmd.BEGIN) {
+				}else if (m.cmd == Message.Cmd.BEGIN) {
 					handshake(m);
 					exchangeData(line);
 					outputBackward.close();

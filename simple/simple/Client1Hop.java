@@ -11,7 +11,7 @@ import simple.Message;
 
 /* usage: java Client <hostname> <port-number> */
 
-public class Client extends Thread {
+public class Client1Hop extends Thread {
 	public String hop1Hostname,hop2Hostname ,hop3Hostname, serverHostname;
 	public int hop1port=8080, hop2port=8080, hop3port=8080, serverPort = 80;
 	boolean successfulConnection = false;
@@ -21,16 +21,16 @@ public class Client extends Thread {
 	Thread t;
 	int hop1Key=0, hop2Key=0, hop3Key=0;
 
-	public Client() {
+	public Client1Hop() {
 
 	}
 
-	public Client(Proxy[] proxies) {
+	public Client1Hop(Proxy[] proxies) {
 		this.proxies = proxies;
 	}
 
 	public void run() {//test
-		Client c = this;
+		Client1Hop c = this;
 		c.hop2Hostname = proxies[1].hostname;
 		c.hop1Hostname = proxies[0].hostname;
 		c.hop1port = proxies[0].recvPort;
@@ -95,15 +95,15 @@ public class Client extends Thread {
 		request.data = (serverHostname + ":" + serverPort + "").getBytes();
 
 		// for (byte mess : create.createMeassage()){
-		os.write(request.createMessage(hop1Key,hop2Key));
+		os.write(request.createMessage(hop1Key));
 		is.read(responseLine);
 		if (responseLine != null) {
-			Message response = Message.receiveMessage(responseLine,hop1Key,hop2Key);
+			Message response = Message.receiveMessage(responseLine,hop1Key);
 			if (response.cmd != Message.Cmd.CONNECTED)
 				throw new IOException("Incorrect message! Connected expected.");
 			connected=System.currentTimeMillis();
 			System.out.println("Successfully CONNECTED  with "+serverHostname);
-			System.out.println("RTT (ping time): " + (connected-dir) +" ms");
+			System.out.println("Website Connection time: " + (connected-dir) +" ms");
 		}
 	}
 
@@ -117,7 +117,7 @@ public class Client extends Thread {
 
 		for (Message request : Message.decompose(text)) {
 			response = request;
-			os.write(request.createMessage(hop1Key,hop2Key));
+			os.write(request.createMessage(hop1Key));
 			// os.flush();
 			if (request.cmd != Message.Cmd.END) {
 			}
@@ -131,7 +131,7 @@ public class Client extends Thread {
 		
 		do {
 			is.read(responseLine);
-			response = Message.receiveMessage(responseLine, hop1Key,hop2Key);
+			response = Message.receiveMessage(responseLine, hop1Key);
 
 			if (response.cmd == Message.Cmd.END) {
 				//System.out.println("got end");
@@ -154,7 +154,7 @@ public class Client extends Thread {
 	    writer.close();
 	    System.out.println("Wrote to file '"+saveFileName+"'");
 	    full=System.currentTimeMillis();
-		System.out.println("Total Response (wget) time: " + (full-dir) +" ms");
+		System.out.println("Total Response  time: " + (full-dir) +" ms");
 	}
 
 	public void startConnection() {
@@ -179,7 +179,7 @@ public class Client extends Thread {
 		if (clientSocket != null && os != null && is != null) {
 			try {
 				initProxyConn(responseLine);
-				hop2Key = initExtendedProxyConn(responseLine, hop2Hostname, hop2port, hop1Key);
+//				hop2Key = initExtendedProxyConn(responseLine, hop2Hostname, hop2port, hop1Key);
 //				hop3Key = initExtendedProxyConn(responseLine, hop3Hostname, hop3port);
 
 				initDataTransfer(responseLine);
@@ -219,8 +219,8 @@ public class Client extends Thread {
 			os.println("client");
 			while((dir-start< 30*1000)){
 			hop1Hostname =  is.readLine();
-			hop2Hostname =  is.readLine();
-			hop3Hostname =  is.readLine();
+			hop1Hostname =  is.readLine();
+//			hop3Hostname =  is.readLine();
 			dirSocket.close();
 			dir =System.currentTimeMillis();
 			if(hop1Hostname!=null && hop2Hostname != null){
@@ -240,7 +240,7 @@ public class Client extends Thread {
 	public static void main(String[] args) {
 		start =System.currentTimeMillis();
 		dir=start;
-		Client c = new Client();
+		Client1Hop c = new Client1Hop();
 		if (args.length == 1 || args.length == 2) {
 
 //			c.hop1Hostname = "35.162.165.63"; // args[0];
