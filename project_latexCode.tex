@@ -1,0 +1,425 @@
+\documentclass{article}
+\usepackage[a4paper, total={6in, 8in}]{geometry}
+\usepackage{graphicx}
+\usepackage{array}
+\newcolumntype{K}[1]{>{\centering\arraybackslash}p{#1}}
+\usepackage{fancyhdr} 
+\usepackage{listings}
+\graphicspath{{images/}}
+\pagestyle{fancy}
+\usepackage{etoolbox}
+\usepackage{etoolbox}
+\usepackage{hyperref}
+
+ 
+\urlstyle{same}
+\patchcmd{\thebibliography}{\section*}{\section}{}{}
+
+
+\begin{document}
+
+\begin{titlepage}
+    \centering
+    \vfill
+    \noindent\rule{15cm}{0.4pt}    
+    \vskip0.4cm
+    {\bfseries\Large
+        Onion Routing: The Price of Anonymity
+    }        
+    \vskip0.2cm
+    \noindent\rule{15cm}{0.4pt}
+    \vskip2cm
+    \includegraphics[width=4cm]{mcgill_logo.png}
+    
+    \vskip9ex
+    \textbf{ECSE 414 - Programming Project}
+    
+    \vskip2.5em
+    \textbf{Group 13}
+    \vskip0.2cm
+      Niloofar Khoshiyar 260515304\\
+      Yusaira Khan 260526007\\
+      Ravi Chaganti 260469339\\
+      Aditya Saha 260453165\\
+      Shamil Premalal 260586332\\
+      Vivak Patel 260581291\\
+
+	\vskip2cm
+    \textbf{Department of Electrical and Computer Engineering}\\
+    \vspace{0.1 cm}
+	\textbf{McGill University}\\
+    \vspace{0.5 cm}
+    \textbf{5th December, 2016}
+    \vfill
+\end{titlepage}
+\newpage
+
+\newpage
+\tableofcontents
+\newpage
+
+\listoffigures
+\newpage
+
+\section{Introduction}
+\subsection{Motivation}
+The right to privacy while surfing the internet is one of the natural rights in many countries of the world. This is imperative due to the rising global trend towards organized logging of information pertaining to the online activities of people. \\
+
+\vspace{0.3 cm}
+
+\noindent One of the most common forms of Internet surveillance is known as ‘traffic analysis’. Internet data packets are comprised of 2 parts: a header that is used for routing, and a data payload that contains the actual intended data. The data payload may include an email message, a web page or any media file [1]. Modern encryption algorithms are well suited to preserve the security and integrity of data payload. However, the header contains information including source, destination, size, timing and other meta-data which are susceptible to external attacks. Simple traffic analysis flags the vulnerabilities of the header in terms of extracting important information. As such, traffic analysis may be performed by any authorized (including ISPs and various government agencies) or unauthorized intermediaries to compromise privacy. \\
+
+\vspace{0.3 cm}
+
+\noindent More complex methodologies of traffic analysis may involve attackers using sophisticated  techniques to track and characterize communication patterns of individuals and organizations. Since simple data encryption is ineffective against such attacks, implementation of better security strategies has been desired in order to protect the privacy of communication against the aforementioned attackers, organizations or agencies. \\
+
+\vspace{0.3 cm}
+
+\noindent Onion Routing addresses these concerns of threat to privacy and security. Its implementation  will be seen later in this report. However, this type of implementation may incur a trade-off between privacy and latency, which will also be analyzed in this report.  
+
+\vspace{0.3 cm}
+
+\subsection{Objective}
+This project is aimed towards development of a simple Onion Routing network application. The implementation design will use the basic principles of TOR -- a popular Onion Routing software. The overall design includes a cluster of proxy nodes and a specialized directory node that includes all the servers in our network. Only 2 proxies - selected based on a predefined set of rules to get the best run-time complexity - are traversed for each communication request. \\
+
+\noindent The implementation uses a simple encryption algorithm, namely Caesar's Cipher, to encrypt header information of the user while transferring the data through a network of proxy servers. Finally, an array of tests is performed to validate the proper functionality of our implementation and compare our application's performance against a simple direct shortest-routing path application. \\
+
+\newpage
+\section{Background}
+\subsection{TOR}
+Onion Routing is a distributed network which provides anonymity by involving proxy servers in the message paths and adding encryption to the application layer of the communication. In this network, the client initializes a communication and creates a path (circuit), through the available proxy nodes in the network. The proxy nodes are referred to as Onion Routers (OR). Each proxy node only knows the identity of the node before and after itself and is not aware of the entire path [2]. \\
+
+\vspace{0.3 cm}
+
+\noindent Furthermore, when the message is created by the client, it is encrypted in multiple layers, which is the reason for its similarity to an onion. The number of encryption layers is equal to the number of proxies within the route of a message to the destination server. As the message passes through each OR, a layer of encryption is unwrapped and the resultant message is passed to the next OR. At the last hop, the OR unwraps the last layer of encryption and passes the plaintext message to the server. However, since this OR does not have access to the previous proxies on the path, the identity of the client will be hidden. The principle of onion routing is based on the fact that within the message route, each proxy cannot have access to the IP of the sender and the plaintext of the message at a time, even though it may have access to one of those. Therefore the identity of the sender is not traceable by the server [2]. \\
+
+\vspace{0.3 cm}
+
+\noindent TOR is a free software which provides anonymous communication network based on the principles of onion routing. All the OR’s in the network are connected to each other by a Transport Layer Security (TLS) connection. The  TOR implements encryption by using two keys: a long-term identity key and a short-term onion key. The identity key is used to sign TLS certificates to report pertinent details of onion routers – including its address, bandwidth and a summary of its keys. It is also used by the directory server to sign directories. The onion key is used to decrypt the requests from the users [2]. \\
+
+\vspace{0.3 cm}
+
+\noindent Understanding anonymous communication using TOR can be condensed into understanding the concept of cells (the units of communication in TOR), circuit lifetime (creation, extension, truncation and tear-down), routing (passage of TCP streams) and directory servers. They are further discussed in the following paragraph [2]. 
+
+\vspace{0.3 cm}
+
+\subsubsection{Cells}
+The communication unit in TOR is called a cell. Every individual cell is 512 bytes long and consists of header and data [2]. In the header, there is a circuit identifier (circID) that uniquely identifies the circuit the cell refers to. Additionally, the header also has a command field (CMD) that specifies the action on the cell data. Cells can be of two types which is determined by their value in the command field. Control cells define commands for padding, setting up a new circuit and to terminate a circuit. These cells are interpreted by the node that receives them. Relay cells are also composed of identifiers such as the stream identifier (streamID), checksum, data length as well as other required command types. An entire cell is encrypted and decrypted using 128-bit AES cipher as it traverses the circuit. The commands in relay cells are mostly related to beginning and ending of a relay connection [2].
+ \\
+
+\vspace{0.3 cm}
+
+\noindent Figures included in the following may be considered to substantiate the discussion above. \\
+
+% INCLUDE FIGURE HERE
+\begin{figure}[!ht]
+	\label{fig:iv}
+    \centering
+    \includegraphics[width=0.4\textwidth]{OR-2.PNG}
+    \caption{Structure of a control cell}
+\end{figure}
+% INCLUDE FIGURE HERE
+\begin{figure}[!ht]
+	\label{fig:iv}
+    \centering
+    \includegraphics[width=0.4\textwidth]{OR-3.PNG}
+    \caption{Structure of a relay cell}
+\end{figure}
+
+\subsubsection{Circuit Generation Algorithm}
+
+To enable a connection between a user and the destination server through a network of proxy servers, there must be a proper generation of an optimum circuit that has minimum latency. For simplicity, we assume that there are only two proxy servers between the user and the destination server. Figure 3 best illustrates the process of creation of circuit [2]. \\
+
+\begin{figure}[!ht]
+	\label{fig:iv}
+    \centering
+    \includegraphics[width=0.9\textwidth]{OR-1.PNG}
+    \caption{2-hop anonymous transmission - Circuit Generation [2]}
+\end{figure}
+
+\vspace{0.3 cm}
+
+\noindent As seen from Figure 3, the user is the client who wants to send an HTTP GET request to the destination server. There are two proxy servers, or onion routing layers (Router 1 and Router 2), in between to hide the identity of the user.\\
+
+\vspace{0.3 cm}
+
+\noindent The first step is to enable a create cell 'c1' between Alice and Router1. Router1 acknowledges the request received from the user and returns a created cell 'c1' back to the user. The next step is to enable a relay extended cell 'c1' between the user and Router2 through Router1. Router1 receives this request and instantiates a create cell 'c2' between Router1 and Router2. Router2 acknowledges the request received from Router1 and returns a created cell 'c2' back to Router1. Finally, Router1 sends the relay extended cell 'c1' back to the user. \\
+
+\vspace{0.3 cm}
+
+\noindent At this point, the circuit connection is established between the user and Router2. The links between the user and Router1 and Router1 and Router2 are TLS (transport layer security) encrypted. For simplicity, we will use Caesar’s Cipher encryption algorithm (Section 2.2) to encrypt the data being transported from the user to Router2. 
+The next step is to reach the destination server and enable a TCP handshake. A relay cell 'c1' is created by the user which goes to Router1, which creates another relay cell 'c2' which goes to Router2,  which then instantiates a TCP handshake between itself and the destination server. \\
+
+\vspace{0.3 cm}
+
+\noindent The circuit between Router2 and the destination server is unencrypted. For simplicity, we will use Caesar Cipher’s decryption algorithm to unencrypt the data (Section 2.2). Router2 returns a relay cell 'c2' to Router1, which returns a relay cell 'c1' back to the user. In the end, the final step is for the user to create a relay cell 'c1' for HTTP GET request to Router1, which creates a relay cell 'c2' to Router2, which directly sends the request to the destination server. The destination server now sends back HTTP GET response to Router2, which sends the response to Router1, which finally sends the response back to the user. 
+
+\vspace{0.3 cm}
+
+\subsubsection{Directory Server}
+A list of proxy servers, client servers, and destination servers are stored in the directory server. It runs a simple TCP socket connection to all the proxy servers and returns a list of uniquely available proxy servers. It also updates the status of  destination servers by checking if they are busy. It also enables a simple process of adding new proxy servers and destination servers [2].
+
+\vspace{0.3 cm}
+
+\subsection{Caesar Cipher Algorithm}
+Caesar's Cipher algorithm was used to implement encryption of data by shifting all the contents in a string by a pre-defined random shift index [4]. To decrypt a string, the random shift index that is appended to encrypted string is extracted and used to bring the string back to its original form. This algorithm was chosen for the purpose of maintaining simplicity of encryption given the complexity of the overall implementation of onion routing. \\
+
+\vspace{0.3 cm}
+
+The following Figure 4 shows how characters were encrypted based on their ASCII values and their range of modulo operation. \\
+
+\begin{figure}[!ht]
+	\label{fig:iv}
+    \centering
+    \includegraphics[width=0.8\textwidth]{caesarTable}
+    \caption{Caesar's Cipher Table: Encryption of Characters}
+\end{figure}
+
+\section{Methodology}
+\subsection{Frameworks}
+We implemented Onion Routing in Java and used java.net.Socket and java.net.ServerSocket to implement basic sockets for networking applications [7]. The project is developed from scratch, without using any external libraries or any other classes from java.net . This decision was based on the fact that we aim for a simplified version of TOR, therefore using an external framework would have been unnecessary. In addition, it would let us learn more about the details of the algorithm rather than only the interface of a pre-built framework. \\
+
+\vspace{0.3 cm}
+
+\noindent For encryption of the messages we chose a simple algorithm, Caesar's Cipher, instead of more complicated encryption libraries. This would let us learn more about a message that is passed and how it is structured, encrypted and decrypted.\\
+
+\vspace{0.3 cm}
+
+\noindent Our main focus for this project has been to build a simple, functioning version of Tor from scratch and test the results. Meanwhile, our implementation is modular so that each module of the project could be replaced by a more complicated implementation in the next steps of the project. For example, an enhancement could be achieved by using a more complicated encryption method. \\
+
+\vspace{0.3 cm}
+
+\subsection{Protocol Description}
+\noindent Below is a high-level summary of the classes that we define and use in our implementation: \\
+
+\begin{itemize}
+\item Client : After the proxy hops , server IP address, and ports are set, the Client starts the connection. Once the proxy connection is established, the client builds blocks of messages and starts the data transfer. The Client fetches the IP addresses of 2 proxy servers from the directory server and builds a 2-hop onion circuit for data communication. This is further elaborated in section 4.1 .\\
+\item DirectoryServer: This is the class which holds the IP address and socket information of all the proxy and destination servers, as well as their status, meaning whether each server is busy or available at each moment. \\
+\item Proxy: A Proxy server is initialized with an IP address, receiving and sending ports. Then the proxy waits for a connection. When a server requests a connection with a message, the message is read. Depending on the CMD field of the received message, the proxy takes the proper action. \\
+\begin {itemize}
+\item CMD = BEGIN: Proxy performs the handshake and starts the data transfer and sends a CONNECTED message upon completion of TCP handshake \\
+\item CMD = CREATE: Proxy responds with a CREATED message as well as the Caesar Cipher Key that will be used for this connection \\
+\item CMD = EXTEND: if the Proxy is not connected to any other proxies (it is, so far, the last proxy in the circuit), the hostname and port number included in the packet is used to create one more hop using a CREATE/CREATED packet mechanism described above. Upon completion, the proxy  responds with an EXTENDED message containing the Caesar cipher key of the exit proxy. If the proxy is not the last proxy so far, the EXTEND/EXTENDED packets are relayed between the exit proxy and the client. \\
+\end{itemize}
+In addition, while relaying, sending and receiving data such as HTTP responses or requests, the following  options of CMD field of the onion packet signify the following: \\
+\begin {itemize}
+\item CMD = DATA: a segment of data is being sent, the length of the segment is specified in the length field of the onion packet header.  These are either relayed or unpacked and concatenated. \\
+\item CMD = END: the stream of data segments have ended and no more DATA packets are there\\
+\item CMD = KEEP\_ALIVE\_PADDING: These are acknowledgments. An acknowledgment is needed after receiving every DATA packet \\
+\end{itemize}
+\item Message: All the implementation related to encryption, decryption, composition and decomposition of a message header and data is done in this class. As explained above, depending on the type of a message the header fields may vary. An illustration of encryption and decryption of a sample message is shown below in figure 5. \\
+\end{itemize}
+
+\begin{figure}[!ht]
+\label{fig:vii}
+    \centering
+    \includegraphics[width=1.0\textwidth]{caesarImage}
+    \caption{Caesar's Cipher Algorithm: Sample Test Case }
+\end{figure}
+
+\noindent To test our system, we host our servers on Amazon Web Services (AWS) [5]. Once running the code, we assign the proper IP addresses and the ports to the appropriate classes. The test setup allows us to test with real servers, rather than a simulation of the system, which increases the accuracy of our tests. However, since we manually create the network, we are limited by the number of nodes we may have. Therefore we focused our tests on small-scale networks. \\
+
+\section{Results and Observations}
+\subsection{Implementation and Features}
+Our program tries to fetch the homepage of a website via an onion network. It is essentially a trimmed down version of ``wget''[6]. It fetches the HTTP response of the website. Some HTTP responses contain only the redirect notice and not the contents of the homepage. The client program fetches the response via a circuit of two proxy servers to preserve anonymity. \\
+
+\vspace{0.3 cm}
+
+Proxies are running continuously on Amazon AWS servers at the IP addresses: 35.162.165.63, 35.161.60.16, 35.162.176.50, 35.162.181.227 at port 8080. Proxies can only connect to one client at a time. Instructions for how to run the program can be found in the file \href{https://github.com/asaha2/onion-routing/blob/master/README.md}{README.md}\\
+
+\vspace{0.3 cm}
+
+\noindent The list of all proxies can be fetched from a directory server running at  35.160.134.241:8080. Currently the list of proxies is hard coded, though a mechanism for inserting proxies to the directory server exists. The directory server can only be accessed by one client at a time. Whenever a client wants to connect to a site, the list of available proxies is fetched from the directory server. The client then chooses the first two proxies that are available to use in its onion circuit. \\
+
+\vspace{0.3 cm}
+
+\noindent When a client connects to the first proxy via the Create/Created packets, as mentioned in the background section, the first proxy sends along a Caesar Cipher key via the Created Packet. As the first proxy connects to the 2nd proxy, the 2nd proxy sends its Caesar Cipher Key along the Extended packet. The client, when sending future requests, encodes the message in both keys. \\
+
+\vspace{0.3 cm}
+
+\noindent Since onions packets are only at most 512 bytes long, requests and responses longer than this need to split into chunks of 512 bytes. Excluding the headers in a relay packet as seen in Figure 2, 498 bytes of data remain. Each request or response is split into chunks of 498 bytes using a relay ``DATA'' cell packet. When all of these ``DATA'' packets are sent, a special relay ``End'' packet is sent to signify the end of transmission.  When a client sends a multi-chunk request to the exit proxy it also needs to receive an acknowledgment packet from this proxy after sending each chunk to enable continuous transfer of data.\\
+
+\vspace{0.3 cm}
+
+\subsection{Problems}
+\noindent One of the problems we faced was that it was not possible to send a stream of data chunk packets without requiring acknowledgments after sending each chunk. Each data chunk packet has a size of exactly 512 bytes and, due to inexperience with socket programming, we did not know how to send a stream of data that was separated into chunks. \\
+
+\vspace{0.3 cm}
+
+\noindent Another problem was that we did not know that the AWS  servers are  hidden behind a firewall and need to be reconfigured so that they can be accessed from the outside. Because of this, for a long time we could not figure out why the client program was failing when we tried to make it work on AWS servers. \\
+
+\subsection{Observations}
+\noindent The results consist of testing and comparing the direct shortest path routing and onion routing applications. After receiving feedback from our presentation, we decide to do further analysis on how the RTT and Response time were functioning. To calculate the round trip time (RTT) for the direct shortest path routing, we used the terminal commands ``ping'' [8]. In addition, we  also fetched the time need to download an entire response from the server to the client. To calculate total response time for the homepage of the sites, we  used download the command ``wget''. We calculated the average RTT and Response time for six Internet Control Message Protocol (ICMP) sequence packets to different websites including Google, Facebook, Yahoo, YouTube, Amazon and McGill University. \\
+
+\vspace{0.3 cm}
+
+\noindent To compute the RTT to the six websites mentioned in our onion routing application, we initially created a time stamp called ``Start'' before establishing a TCP socket connection from the client to the first proxy and also created a ``RTT(ping)'' time stamp to notify a successful TCP connection. To compute total response time, we used the same time stamp as above, and also created a ``response(wget)'' time stamp when the client finished downloading the HTTP response containing the website. \\
+
+\vspace{0.3 cm}
+
+\noindent Figures 4, 5, and 6 are screen-shots that show the RTT and response time taken for the onion routing application when establishing a communication with Facebook, Yahoo  and Google. RTTs   are 363ms, 365ms and 373s respectively. Response times are 650ms, 729ms and 8275 ms. \\
+
+\vspace{0.3 cm}
+
+\begin{figure}[!ht]
+	\label{fig:v}
+    \centering
+    \includegraphics[width=0.8\textwidth]{facebook.png}
+    \caption{RTT (363ms) and Response time (650ms) for Facebook  }
+\end{figure}
+
+\begin{figure}[!ht]
+\label{fig:vi}
+    \centering
+    \includegraphics[width=0.8\textwidth]{yahoo.png}
+    \caption{RTT (365ms) and Response Time (729ms) for Yahoo  }
+\end{figure}
+
+\begin{figure}[!ht]
+\label{fig:vii}
+    \centering
+    \includegraphics[width=0.8\textwidth]{google.png}
+    \caption{RTT  (373ms)  and Response Time (8275ms) for Google }
+\end{figure}
+
+
+\noindent RTT values from the onion routing and direct shortest path routing applications can be seen in Table 1. We observe that the RTT for onion routing (OT) is longer than the RTT for the direct shortest path routing (DT) as expected. Furthermore, the average latency for all the websites is approximately 340.8ms, whereas, the average ratio of DT and OT is approximately 16.6. This average ratio could be inferred as a slow down of RTT. \\
+
+\vspace{0.3 cm}
+
+\begin{table}[]
+\centering
+\caption{Table of RTT computations}
+\label{my-label}
+\begin{tabular}{|K{3cm}|K{3cm}|K{2.5cm}|K{2.5cm}|K{1.5cm}|}
+\hline
+Website          & Direct Shortest Path Routing  RTT - DT (ms) & Onion Routing RTT - OT (ms) & RTT Latency - OT - DT (ms) & DT / OT Ratio  \\ \hline
+www.google.com   & 24                                       & 373                           & 349                         & 15.54                    \\ \hline
+www.facebook.com & 19                                       & 363                           & 344                         & 19.10                    \\ \hline
+www.youtube.com  & 17                                       & 377                           & 320                         & 22.18                    \\ \hline
+www.yahoo.com    & 21                                       & 365                           & 344                         & 17.38                    \\ \hline
+www.amazon.com   & 47                                       & 505                           & 458                         & 10.74                    \\ \hline
+www.mcgill.ca    & 42                                       & 613                           & 571                         & 14.60                    \\ \hline
+\end{tabular}
+\end{table}
+\vspace{0.3 cm}
+
+\noindent The response times from the onion routing and direct shortest path routing applications can be seen in Table 2. Similarly as for RTT, we observe that the RTT for onion routing (OT) is longer than the RTT for the direct shortest path routing (DT) as expected. The variation between the values for response time can be explained by the nature of HTTP response received. Some websites, such as Google and Mcgill University, sent a response containing the HTML file of the homepage. The other websites sent a redirect notice. This would explain the discrepancy between the results from Google and 
+
+\vspace{0.3 cm}
+\begin{table}[]
+\centering
+\caption{ Table of Response Time computations}
+\label{my-label}
+\begin{tabular}{|K{3cm}|K{3cm}|K{2.5cm}|K{2.5cm}|K{1.5cm}|}
+\hline
+Website          & Direct Shortest Path Routing  Response Time  DT(ms) & Onion Routing Response Time  OT (ms) & Response Time Latency  OT - DT (ms) & Response Time Ratio  OT / DT \\ \hline
+www.google.com   & 281                                      & 8275                          & 7994                         & 29.44                    \\ \hline
+www.facebook.com & 117                                      & 615                           & 498                         & 4.25                    \\ \hline
+www.youtube.com  & 100                                      & 755                           & 655                         & 7.55                    \\ \hline
+www.yahoo.com    & 78                                       & 729                           & 651                         & 9.34                    \\ \hline
+www.amazon.com   & 109                                      & 849                           & 840                         & 7.71                    \\ \hline
+www.mcgill.ca    & 132                                      & 8893                          & 8761                         & 67.37                    \\ \hline
+\end{tabular}
+\end{table}
+
+
+
+\vspace{0.3 cm}
+
+\noindent The results shown confirmed our hypothesis that onion routing has more latency, since it takes a longer circuit path than a shortest path routing application at the cost of anonymity.  
+
+
+\newpage
+\section{Discussion}
+\subsection{Challenges}
+One of the biggest challenges we faced was that we did not realize the way we had setup our proxies (when a proxy tried to relay a message in-between, it paused to receive an acknowledgment). The proxies were setup to a freeze while receiving a message from its previous hop and at the same time sending the packet to the following hop. These points where the program was freezing were not easily identified and required careful use of the debugger to overcome these issues.\\
+
+\vspace{0.3 cm}
+
+\noindent It was also difficult to debug programs when they were running on separate computers, since a debugger could not be used. This was solved by using spurious logging and by testing the proxies initially on local host.\\
+
+\vspace{0.3 cm}
+
+\noindent There were also problems with the firewall of the AWS servers. No ports can be accessed externally on an AWS server, unless it is manually configured, as stated in Section 4.2. 
+
+\vspace{0.3 cm}
+
+\subsection{Improvements}
+\begin{itemize}  
+\item Proxies can advertise themselves to the Directory Server at the start of the Proxy program so that they can be added to the list of available Proxies. Additionally, they can remove themselves from the list of proxies when prrors have occurred. Currently, Proxies are hard coded inside the directory server, since we only have 4 AWS servers available for the proxies. This way, anyone's computer can be turned into a proxy and our onion network can grow.\\
+
+\vspace{0.1 cm}
+
+\item The client could specify the number of proxies they would prefer in their onion circuit. Currently, each circuit uses exactly 2 proxies. But this is not necessary, since the chain of proxies can be arbitrarily long.\\
+
+\vspace{0.1 cm}
+
+\item Responses and requests could be sent without the continuous acknowledgment packets. Removing this could make data transmission twice as efficient.\\
+
+\vspace{0.1 cm}
+
+\item Make each proxy be able to deal with multiple incoming and outgoing  connections. Currently a proxy can only accept 1 incoming connection.\\
+
+\vspace{0.1 cm}
+
+\item Use SSL to establish
+connections and use AES instead of Caesar Cipher.\\
+
+\vspace{0.1 cm}
+
+\end{itemize}
+
+\section{Github Code}
+Here is the link to the Github code:
+https://github.com/asaha2/onion-routing
+
+\newpage
+\begin{thebibliography}{9}
+%\bibliographystyle{plain}
+%\bibliography{bibliography}
+[1] N. Unuth, "What Is a Data Packet?", Lifewire, 2016. [Online]. Available: https://www.lifewire.com/what-is-a-data-packet-3426310.\\
+ \\
+
+[2] R. Dingledine, N. Mathewson and P. Syverson, "Tor: The Second-Generation Onion Router", Svn.torproject.org, 2016. [Online]. Available: https://svn.torproject.org/svn/projects/design-paper/tor-design.html.\\
+ \\
+
+[3] P. Syverson, "Onion Routing", Onion-router.net, 2005. [Online]. Available: https://www.onion-router.net/.\\
+ \\
+ 
+[4] C. Savarese and B. Hart, "Caesar Cipher", Cs.trincoll.edu, 1999. [Online]. Available: http://www.cs.trincoll.edu/~crypto/historical/caesar.html. [Accessed: 06- Dec- 2016].\\
+ \\
+ 
+[5] Amazon Web Services, 2016. [Online]. Available:\\ https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-network-security.html.\\
+ \\
+ 
+[6] GNU Wget 1.18 Manual, Gnu.org, 2008. [Online]. Available: https://www.gnu.org/software/wget/manual/wget.html. \\
+ \\
+ 
+[7] "Class java.net.Socket", Cis.upenn.edu, 2016. [Online]. Available: http://www.cis.upenn.edu/~bcpierce/courses/629/jdkdocs/api/java.net.Socket.html.\\
+ \\
+ 
+[8]"Understanding the Ping and Traceroute Commands", Cisco, 2016. [Online]. Available: http://www.cisco.com/c/en/us/support/docs/ios-nx-os-software/ios-software-releases-121-mainline/12778-ping-traceroute.html. 
+
+\end{thebibliography}
+
+\newpage
+\section{Appendix}
+
+
+\begin{figure}[!ht]
+\label{fig:vi}
+    \centering
+    \includegraphics[width=0.8\textwidth]{proxy2.png}
+    \caption{Screenshot of Initializing Data Transfer at 1st Proxy}
+\end{figure}
+
+\begin{figure}[!ht]
+\label{fig:vi}
+    \centering
+    \includegraphics[width=0.8\textwidth]{proxy1.png}
+    \caption{Screenshot of Initializing Data Transfer at 2nd Proxy}
+\end{figure}
+
+
+\end{document}
